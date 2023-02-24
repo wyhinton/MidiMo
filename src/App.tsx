@@ -11,6 +11,7 @@ import ErrorFallback from "./ErrorFallback";
 import { useDropzone } from "react-dropzone";
 import DragPopup from "./DragPopup";
 import useStore from "./store";
+import SetBpm from "./SetBpm";
 
 const Line = (): JSX.Element => {
   return (
@@ -69,7 +70,7 @@ function App() {
         }}
       >
         <Container
-          xs
+          sm
           css={{
             py: "$xl",
             dflex: "center",
@@ -84,6 +85,11 @@ function App() {
               // reset the state of your app so the error doesn't happen again
             }}
           >
+            <SetBpm
+              onBpmChange={(bpm) => {
+                console.log(bpm);
+              }}
+            />
             <MidiCheck>
               {(inputs, outputs) => {
                 return (

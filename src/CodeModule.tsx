@@ -81,19 +81,17 @@ const vars = [
 const InterfacePopup = (): JSX.Element => {
   return (
     <div style={{ width: 200, height: 100 }}>
-      <SyntaxHighlighter language="javascript">
-              
-        {`export interface ModuleData {
-  id: string;
-  description: string;
-  active: boolean;
-  effectType: EffectType;
-  expanded: boolean;
-  processor?: FuncCarrier;
-  data?: any;
+      {/* <SyntaxHighlighter language="javascript"> */}
+            
+      {`export interface MidiData {
+  data: number[];
+  deviceName: string;
+  eventType: MessageType;
+  blocked?: boolean;
+  eventTime?: Date;
 }`}
-            
-      </SyntaxHighlighter>
+          
+      {/* </SyntaxHighlighter> */}
     </div>
   );
 };

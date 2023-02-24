@@ -32,7 +32,7 @@ const MidiSupply = ({
     console.log(inputDeviceName);
     setactiveInput(inputs.find((i) => i.name === inputDeviceName));
   }, [inputDeviceName, inputs]);
-  console.log(inputs.find((i) => i.name === inputDeviceName));
+  // console.log(inputs.find((i) => i.name === inputDeviceName));
   // const [activeInput, setactiveInput] = useState<Input | undefined>(
   //   inputs[0] ?? undefined
   // );

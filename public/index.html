@@ -53,6 +53,19 @@
         let noteValData = data.data[1];
         return noteValData == noteRaw;
       }
+
+      function isNoteOn(data) {
+        let k = data.data[0];
+        const noteOns = [
+          0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a,
+          0x9b, 0x9c, 0x9d, 0x9e, 0x9f,
+        ];
+        if (k in noteOns) {
+          return true;
+        } else {
+          return false;
+        }
+      }
     </script>
     <div id="menuportal"></div>
     <div id="root"></div>

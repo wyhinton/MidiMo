@@ -30,7 +30,7 @@ export default function useMidiChain(moduleIndex: number) {
   }, [moduleOutputMidi]);
 
   useEffect(() => {
-    console.log(curModule);
+    // console.log(curModule);
 
     let codes = [];
     if (curModule.active) {

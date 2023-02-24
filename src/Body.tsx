@@ -119,7 +119,7 @@ function Body({ midiInput, midiOutput }: BodyProps) {
   }, [midiInput, modules, outputDevice, setStartMessage]);
 
   useEffect(() => {
-    console.log(tChain);
+    // console.log(tChain);
     setMidiChainData(tChain);
   }, [tChain]);
 
