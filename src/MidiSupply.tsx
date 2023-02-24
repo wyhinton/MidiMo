@@ -17,10 +17,25 @@ const MidiSupply = ({
   inputs,
   outputs,
 }: MidiSupplyProps): JSX.Element => {
-  const { setOutputDevice, showOutputIndicator } = useStore();
+  const {
+    setOutputDevice,
+    showOutputIndicator,
+    setInputDeviceName,
+    inputDeviceName,
+    inputDevice,
+    outputDevice,
+  } = useStore();
   const [activeInput, setactiveInput] = useState<Input | undefined>(
-    inputs[0] ?? undefined
+    inputs.find((i) => i.name === inputDeviceName)
   );
+  useEffect(() => {
+    console.log(inputDeviceName);
+    setactiveInput(inputs.find((i) => i.name === inputDeviceName));
+  }, [inputDeviceName, inputs]);
+  console.log(inputs.find((i) => i.name === inputDeviceName));
+  // const [activeInput, setactiveInput] = useState<Input | undefined>(
+  //   inputs[0] ?? undefined
+  // );
   const [activeOutput, setactiveOutput] = useState<Output | undefined>(
     outputs[0] ?? undefined
   );
@@ -33,8 +48,10 @@ const MidiSupply = ({
       <MidiSelector
         midiType="input"
         activeItem={activeInput}
+        // selectedKeys={[inputDeviceName]}
         onSelectionChange={(connection) => {
           setactiveInput(connection as Input);
+          setInputDeviceName(connection.name);
         }}
         midiItems={inputs}
         noItemsMessage="No Midi Inputs Detected"

@@ -42,9 +42,9 @@ const GlobalVars = (): JSX.Element => {
           title={"Global Variables"}
         >
           <Grid.Container gap={2}>
-            {globals.map((g) => {
+            {globals.map((g, i) => {
               return (
-                <Grid xs={12} justify="space-around">
+                <Grid key={i} xs={12} justify="space-around">
                   <div>
                     <span style={{ fontFamily: "monospace", color: "#0072F5" }}>
                       window.midi.

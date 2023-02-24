@@ -2,7 +2,7 @@ import create from "zustand";
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { v4 as uuidv4 } from "uuid";
 import { EffectType, MessageType } from "./types";
-import { Output } from "@react-midi/hooks/dist/types";
+import { Connection, Input, Output } from "@react-midi/hooks/dist/types";
 
 export interface FuncCarrier {
   func: MidiProcessor;
@@ -54,6 +54,8 @@ interface TodoState {
   globals: GlobalVar[];
   midiChain: MidiData[];
   startMessage: MidiData | undefined;
+  inputDevice: Connection | undefined;
+  inputDeviceName: string | undefined;
   outputDevice: Output | undefined;
   showProcessingIndicator: boolean;
   showOutputIndicator: boolean;
@@ -63,6 +65,8 @@ interface TodoState {
   loadStore: (settings: StoreLoad) => void;
   removeTodo: (id: string) => void;
   setProcessor: (id: string, processor: FuncCarrier) => void;
+  setInputDevice: (device: Connection | undefined) => void;
+  setInputDeviceName: (deviceName: string | undefined) => void;
   setOutputDevice: (device: Output | undefined) => void;
   setModuleData: (id: string, data: any) => void;
   setStartMessage: (msg: MidiData) => void;
@@ -184,20 +188,6 @@ export const useStore = create<TodoState>()(
             effectType: "Logger",
             expanded: false,
           },
-          // {
-          //   id: "2",
-          //   description: "something2",
-          //   active: true,
-          //   effectType: "Code",
-          //   expanded: false,
-          // },
-          // {
-          //   id: "3",
-          //   description: "something3",
-          //   active: true,
-          //   effectType: "Logger",
-          //   expanded: false,
-          // },
         ],
         globals: [
           {
@@ -212,6 +202,8 @@ export const useStore = create<TodoState>()(
         startMessage: undefined,
         midiChain: [],
         outputDevice: undefined,
+        inputDevice: undefined,
+        inputDeviceName: undefined,
         showProcessingIndicator: false,
         showOutputIndicator: false,
         setMidiChainData: (dataArr) => {
@@ -293,9 +285,19 @@ export const useStore = create<TodoState>()(
             ),
           }));
         },
-        setOutputDevice: (device) => {
+        setOutputDevice: (outDevice) => {
           set((state) => ({
-            outputDevice: device,
+            outputDevice: outDevice,
+          }));
+        },
+        setInputDevice: (inDevice) => {
+          set((state) => ({
+            inputDevice: inDevice,
+          }));
+        },
+        setInputDeviceName: (inputDeviceName) => {
+          set((state) => ({
+            inputDeviceName: inputDeviceName,
           }));
         },
         setStartMessage: (msg) => {
@@ -343,17 +345,3 @@ interface MyState {
   bears: number;
   addABear: () => void;
 }
-
-export const useBearStore = create<MyState>()(
-  persist(
-    (set, get) => ({
-      bears: 0,
-      addABear: () => set({ bears: get().bears + 1 }),
-    }),
-    {
-      name: "food-storage", // name of item in the storage (must be unique)
-      storage: createJSONStorage(() => sessionStorage), // (optional) by default the 'localStorage' is used
-      partialize: (state) => ({ bears: state.bears }),
-    }
-  )
-);

@@ -1,5 +1,6 @@
 import { Card, Container, Text } from "@nextui-org/react";
 import React, { useState, useEffect, useRef } from "react";
+import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
 import useStore, { MidiData, ModuleData } from "./store";
 import ToggleButton from "./ToggleButton";
 import useMidiChain from "./UseMidiChain";
@@ -10,6 +11,7 @@ interface CollapseProps {
   onClick: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   title: string;
   index: number;
+  dragHandleProps: DraggableProvidedDragHandleProps | null | undefined;
 }
 const CollapseCustom = ({
   module,
@@ -17,6 +19,7 @@ const CollapseCustom = ({
   onClick,
   title,
   index,
+  dragHandleProps,
 }: CollapseProps): JSX.Element => {
   const { toggleCompletedState } = useStore();
 
@@ -24,6 +27,7 @@ const CollapseCustom = ({
     <>
       <div
         className="nextui-collapse-title nextui-collapse-view"
+        {...dragHandleProps}
         style={{
           cursor: "auto",
           justifyContent: "space-between",

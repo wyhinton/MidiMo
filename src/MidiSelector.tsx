@@ -213,7 +213,7 @@ export const MidiSelector = ({
         justifyContent: "center",
         padding: 10,
         // backgroundColor: bgColor,
-        // backgroundColor: isProcessing ? "green" : "red",
+        backgroundColor: isProcessing ? "green" : "",
         border: "1px solid white",
         boxShadow: "box-shadow: 0px 10px 57px -17px #17C964",
       }}
@@ -237,6 +237,7 @@ export const MidiSelector = ({
                 const selectedMidiItem = asConnections.find(
                   (item) => item.name === (arr[0] as string)
                 );
+                console.log(keys);
                 setSelected(keys as Set<string>);
                 if (selectedMidiItem) {
                   onSelectionChange(selectedMidiItem);

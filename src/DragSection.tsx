@@ -144,7 +144,7 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
-                          {...provided.dragHandleProps}
+                          // {...provided.dragHandleProps}
                           // style={getItemStyle(
                           //   snapshot.isDragging,
                           //   provided.draggableProps.style
@@ -175,6 +175,7 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
                                 onClick={(e) => {
                                   toggleExpanded(module.id);
                                 }}
+                                dragHandleProps={provided.dragHandleProps}
                                 title={module.effectType}
                               >
                                 <div>

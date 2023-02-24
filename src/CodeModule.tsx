@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-
+import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
+import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
+import docco from "react-syntax-highlighter/dist/esm/styles/hljs/docco";
 import { useMap, MapOrEntries } from "usehooks-ts";
 import "./App.css";
 import AceEditor from "react-ace";
@@ -19,27 +21,11 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/theme-tomorrow_night_bright";
 import { ModuleProps } from "./types";
 import { FuncCarrier, MidiData, MidiProcessor, useStore } from "./store";
-
-type VarMap = Omit<Map<string, any>, "set" | "clear" | "delete">;
-
+import useKeyboardShortcut from "use-keyboard-shortcut";
+SyntaxHighlighter.registerLanguage("javascript", js);
 interface ExecFunc {
   func: Function;
 }
-
-const defaultVars: MapOrEntries<string, any> = [
-  ["test1", '"first"'],
-  ["test2", '"second"'],
-];
-
-const makeDefaultFunc = (vm: VarMap): string => {
-  const invars = Array.from(vm)
-    .map((v) => v[0])
-    .join(",");
-  return `
-    data.data[0] += 10
-    return data
-`;
-};
 
 interface VarButtonData {
   label: string;
@@ -92,14 +78,34 @@ const vars = [
   },
 ];
 
+const InterfacePopup = (): JSX.Element => {
+  return (
+    <div style={{ width: 200, height: 100 }}>
+      <SyntaxHighlighter language="javascript">
+              
+        {`export interface ModuleData {
+  id: string;
+  description: string;
+  active: boolean;
+  effectType: EffectType;
+  expanded: boolean;
+  processor?: FuncCarrier;
+  data?: any;
+}`}
+            
+      </SyntaxHighlighter>
+    </div>
+  );
+};
+
 const VarList = ({ onVarClick }: VarListProps): JSX.Element => {
   // const vars = ["Message Type", "Channel", "Source Name", "Time Created"];
 
   return (
     <Grid.Container gap={2} justify={"space-evenly"}>
-      {vars.map((v) => {
+      {vars.map((v, i) => {
         return (
-          <Grid>
+          <Grid key={i}>
             <Tooltip content={v.tooltip}>
               <Button
                 onClick={(e) => {
@@ -131,12 +137,28 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
 
   const { setProcessor, setModuleData } = useStore();
 
-  const [map] = useMap<string, string>(defaultVars);
   const [inputFunc, setInputFunc] = useState<string>(
     (moduleData.data as CodeModuleData).codeText
   );
   const [funcStatus, setFuncStatus] = useState<string>("no function");
   const [funcToExec, setFuncToExec] = useState<ExecFunc | undefined>();
+  const [fontSize, setFontSize] = useState(14);
+  useKeyboardShortcut(
+    ["Shift", "+"],
+    (shortcutKeys) => setFontSize(fontSize + 2),
+    {
+      overrideSystem: true,
+      ignoreInputFields: false,
+    }
+  );
+  useKeyboardShortcut(
+    ["Shift", "-"],
+    (shortcutKeys) => setFontSize(fontSize - 2),
+    {
+      overrideSystem: true,
+      ignoreInputFields: false,
+    }
+  );
 
   useEffect(() => {
     try {
@@ -144,7 +166,6 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
       // console.log(func);
       setFuncToExec({ func: func });
       try {
-        // setOutput(JSON.stringify(test));
       } catch (e: any) {
         setFuncStatus(e.message);
       }
@@ -152,7 +173,7 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
     } catch (e: any) {
       setFuncStatus(e.message);
     }
-  }, [inputFunc, map, funcStatus]);
+  }, [inputFunc, funcStatus]);
 
   useEffect(() => {
     try {
@@ -177,11 +198,34 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
       <br></br>
       <Text>Output</Text>
       <Text>{JSON.stringify(funcOutput)}</Text> */}
-      <VarList
+      {/* <VarList
         onVarClick={(v) => {
           // console.log(v);
         }}
-      />
+      /> */}
+      {/* {`
+        export interface MidiData {
+          data: number[];
+          deviceName: string;
+          eventType: MessageType;
+          blocked?: boolean;
+          eventTime?: Date;
+        }`} */}
+      {/* <span>inputs:</span>
+        <code>data</code>
+        {`inputs: data`}
+        {`MUST return data object`} */}
+      <code
+        style={{
+          borderBottom: "1px solid white",
+          width: "100%",
+          textAlign: "left",
+          display: "flex",
+        }}
+      >
+        function(data: <Tooltip content={<InterfacePopup />}>MidiData</Tooltip>
+        ): MidiData
+      </code>
       <Card>
         {moduleData.active && (
           <AceEditor
@@ -194,11 +238,11 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
               setModuleData(moduleData.id, { codeText: val } as CodeModuleData);
               console.log(val);
             }}
-            fontSize={14}
+            fontSize={fontSize}
             showPrintMargin={true}
             // showPrintMargin={true}
-            showGutter={false}
-            // showGutter={true}
+            // showGutter={false}
+            showGutter={true}
             highlightActiveLine={true}
             value={inputFunc}
             height={"200px"}
