@@ -44,6 +44,15 @@
       function SAY_HELLO() {
         console.log("SAYING HELLO!!!");
       }
+
+      function transposeNote(data, amount) {
+        data.data[1] += amount;
+      }
+
+      function isSameNote(data, noteRaw) {
+        let noteValData = data.data[1];
+        return noteValData == noteRaw;
+      }
     </script>
     <div id="menuportal"></div>
     <div id="root"></div>

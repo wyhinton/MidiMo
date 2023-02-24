@@ -120,18 +120,22 @@ const VarList = ({ onVarClick }: VarListProps): JSX.Element => {
   );
 };
 
+interface CodeModuleData {
+  codeText: string;
+}
+
 function CodeModule({ moduleData, midiData, index }: ModuleProps) {
   const onChange = (value: string, event: any) => {
     setInputFunc(value);
   };
 
-  const { setProcessor } = useStore();
+  const { setProcessor, setModuleData } = useStore();
 
-  // const message = useMIDIMessage(activeInput);
   const [map] = useMap<string, string>(defaultVars);
-  const [inputFunc, setInputFunc] = useState<string>(makeDefaultFunc(map));
+  const [inputFunc, setInputFunc] = useState<string>(
+    (moduleData.data as CodeModuleData).codeText
+  );
   const [funcStatus, setFuncStatus] = useState<string>("no function");
-  const [funcOutput, setOutput] = useState<MidiProcessor | undefined>();
   const [funcToExec, setFuncToExec] = useState<ExecFunc | undefined>();
 
   useEffect(() => {
@@ -187,6 +191,8 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
             name="blah2"
             onChange={(val, e) => {
               onChange(val, e);
+              setModuleData(moduleData.id, { codeText: val } as CodeModuleData);
+              console.log(val);
             }}
             fontSize={14}
             showPrintMargin={true}

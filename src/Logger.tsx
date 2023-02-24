@@ -10,12 +10,12 @@ const maxLogLength = 50;
 function Logger({ moduleData, index }: ModuleProps) {
   const [logs, setLogs] = useState<MidiData[]>([]);
   const { moduleInputMidi } = useMidiChain(index);
-  console.log(moduleInputMidi);
+  // console.log(moduleInputMidi);
   useEffect(() => {
-    console.log("UPDATING LOGER");
+    // console.log("UPDATING LOGER");
     // console.log(moduleInputMidi);
     if (moduleInputMidi && !moduleInputMidi.blocked) {
-      console.log(moduleInputMidi);
+      // console.log(moduleInputMidi);
       let newLogArr = [...logs, moduleInputMidi];
       if (newLogArr.length > maxLogLength) {
         newLogArr = newLogArr.slice(
