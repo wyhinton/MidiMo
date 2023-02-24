@@ -213,7 +213,7 @@ export const MidiSelector = ({
         justifyContent: "center",
         padding: 10,
         // backgroundColor: bgColor,
-        backgroundColor: isProcessing ? "green" : "red",
+        // backgroundColor: isProcessing ? "green" : "red",
         border: "1px solid white",
         boxShadow: "box-shadow: 0px 10px 57px -17px #17C964",
       }}
