@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
 import docco from "react-syntax-highlighter/dist/esm/styles/hljs/docco";
@@ -19,9 +19,17 @@ import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-tomorrow_night_bright.js";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/theme-tomorrow_night_bright";
+import "ace-builds/webpack-resolver";
 import { ModuleProps } from "./types";
-import { FuncCarrier, MidiData, MidiProcessor, useStore } from "./store";
+import {
+  CodeModuleData,
+  FuncCarrier,
+  MidiData,
+  MidiProcessor,
+  useStore,
+} from "./store";
 import useKeyboardShortcut from "use-keyboard-shortcut";
+import Portal from "./Portal";
 SyntaxHighlighter.registerLanguage("javascript", js);
 interface ExecFunc {
   func: Function;
@@ -124,9 +132,17 @@ const VarList = ({ onVarClick }: VarListProps): JSX.Element => {
   );
 };
 
-interface CodeModuleData {
-  codeText: string;
-}
+// interface Shortcut {
+//   shortcutKeys: string[];
+//   callback: callbackFn;
+//   options?: {
+//     overrideSystem?: boolean;
+//     ignoreInputFields?: boolean;
+//     repeatOnHold?: boolean;
+//   };
+// }
+
+// const UseKeyBoardShortcuts()
 
 function CodeModule({ moduleData, midiData, index }: ModuleProps) {
   const onChange = (value: string, event: any) => {
@@ -141,12 +157,14 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
   const [funcStatus, setFuncStatus] = useState<string>("no function");
   const [funcToExec, setFuncToExec] = useState<ExecFunc | undefined>();
   const [fontSize, setFontSize] = useState(14);
+  const [fullScreen, setFullScreen] = useState(false);
+
   useKeyboardShortcut(
     ["Shift", "+"],
     (shortcutKeys) => setFontSize(fontSize + 2),
     {
       overrideSystem: true,
-      ignoreInputFields: false,
+      ignoreInputFields: true,
     }
   );
   useKeyboardShortcut(
@@ -154,9 +172,18 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
     (shortcutKeys) => setFontSize(fontSize - 2),
     {
       overrideSystem: true,
-      ignoreInputFields: false,
+      ignoreInputFields: true,
     }
   );
+
+  useKeyboardShortcut(["Escape"], (shortcutKeys) => setFullScreen(false), {
+    // overrideSystem: true,
+    ignoreInputFields: false,
+  });
+
+  useEffect(() => {
+    console.log(fullScreen);
+  }, [fullScreen]);
 
   useEffect(() => {
     try {
@@ -189,30 +216,32 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
     }
   }, [funcToExec]);
 
+  const sharedProps = {
+    placeholder: "Placeholder Text",
+    mode: "javascript",
+    theme: "tomorrow_night_bright",
+    name: "blah2",
+    fontSize: fontSize,
+    showPrintMargin: true,
+    showGutter: true,
+    highlightActiveLine: true,
+    // value:{inputFunc},
+    width: "100%",
+    setOptions: {
+      enableBasicAutocompletion: false,
+      enableLiveAutocompletion: false,
+      enableSnippets: false,
+      showLineNumbers: true,
+      useWorker: true,
+
+      tabSize: 2,
+    },
+  };
+
+  const editorRef = useRef(null);
+
   return (
     <Grid.Container gap={2} justify="center">
-      {/* <Text b>{funcStatus}</Text>
-      <Text>{JSON.stringify(midiData)}</Text>
-      <br></br>
-      <Text>Output</Text>
-      <Text>{JSON.stringify(funcOutput)}</Text> */}
-      {/* <VarList
-        onVarClick={(v) => {
-          // console.log(v);
-        }}
-      /> */}
-      {/* {`
-        export interface MidiData {
-          data: number[];
-          deviceName: string;
-          eventType: MessageType;
-          blocked?: boolean;
-          eventTime?: Date;
-        }`} */}
-      {/* <span>inputs:</span>
-        <code>data</code>
-        {`inputs: data`}
-        {`MUST return data object`} */}
       <code
         style={{
           borderBottom: "1px solid white",
@@ -224,34 +253,97 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
         function(data: <Tooltip content={<InterfacePopup />}>MidiData</Tooltip>
         ): MidiData
       </code>
-      <Card>
+
+      <Portal animate={true} visible={fullScreen} divId="#fullScreenPortal">
+        <Container
+          xl
+          css={{
+            height: "100%",
+            width: "100%",
+            // backgroundColor: "red",
+            backdropFilter: "blur(10px)",
+          }}
+          display="flex"
+          justify="center"
+          alignItems="center"
+        >
+          <Card
+            css={{
+              height: "90%",
+              width: "80%",
+              // backgroundColor: "red",
+            }}
+          >
+            <Button
+              bordered
+              css={{ position: "absolute", zIndex: 100, top: 0, right: 10 }}
+              onClick={(e) => {
+                setFullScreen(!fullScreen);
+              }}
+              auto
+              icon={<i className="fa fa-expand"></i>}
+            ></Button>
+            {moduleData.active && (
+              <AceEditor
+                placeholder="Placeholder Text"
+                mode="javascript"
+                theme="tomorrow_night_bright"
+                name="blah2"
+                onChange={(val, e) => {
+                  if (fullScreen) {
+                    onChange(val, e);
+                    setModuleData(moduleData.id, {
+                      codeText: val,
+                    } as CodeModuleData);
+                    console.log(val);
+                  }
+                }}
+                fontSize={fontSize}
+                showPrintMargin={true}
+                // showPrintMargin={true}
+                // showGutter={false}
+                showGutter={true}
+                highlightActiveLine={true}
+                value={inputFunc}
+                height={"100%"}
+                width={"100%"}
+                setOptions={{
+                  enableBasicAutocompletion: false,
+                  enableLiveAutocompletion: false,
+                  enableSnippets: false,
+                  showLineNumbers: true,
+                  tabSize: 2,
+                }}
+              />
+            )}
+          </Card>
+        </Container>
+      </Portal>
+      <Card css={{ position: "relative" }}>
+        <Button
+          bordered
+          css={{ position: "absolute", zIndex: 100, top: 0, right: 10 }}
+          onClick={(e) => {
+            setFullScreen(!fullScreen);
+          }}
+          auto
+          icon={<i className="fa fa-expand"></i>}
+        ></Button>
         {moduleData.active && (
           <AceEditor
-            placeholder="Placeholder Text"
-            mode="javascript"
-            theme="tomorrow_night_bright"
-            name="blah2"
+            {...sharedProps}
+            ref={editorRef}
             onChange={(val, e) => {
               onChange(val, e);
               setModuleData(moduleData.id, { codeText: val } as CodeModuleData);
-              console.log(val);
+              console.log(editorRef);
+              // console.log(val);
             }}
-            fontSize={fontSize}
-            showPrintMargin={true}
-            // showPrintMargin={true}
-            // showGutter={false}
-            showGutter={true}
-            highlightActiveLine={true}
+            onValidate={(annotations) => {
+              console.log(annotations);
+            }}
             value={inputFunc}
             height={"200px"}
-            width={"100%"}
-            setOptions={{
-              enableBasicAutocompletion: false,
-              enableLiveAutocompletion: false,
-              enableSnippets: false,
-              showLineNumbers: true,
-              tabSize: 2,
-            }}
           />
         )}
       </Card>

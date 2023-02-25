@@ -40,8 +40,10 @@ export const reorderit = (
 };
 
 export interface GlobalVar {
+  id: number;
   name: string;
-  value: string | boolean | number;
+  value: any;
+  defaultValue: any;
 }
 
 interface StoreLoad {
@@ -56,17 +58,22 @@ interface TodoState {
   startMessage: MidiData | undefined;
   inputDevice: Connection | undefined;
   inputDeviceName: string | undefined;
+  outputDeviceName: string | undefined;
   outputDevice: Output | undefined;
   showProcessingIndicator: boolean;
   showOutputIndicator: boolean;
   addModule: (description: string, effectType: EffectType) => void;
   addGlobal: (global: GlobalVar) => void;
+  clearGlobals: () => void;
+  updateGlobal: (id: number, value: any) => void;
+  deleteGlobal: (id: number) => void;
   deleteModule: (id: string) => void;
   loadStore: (settings: StoreLoad) => void;
   removeTodo: (id: string) => void;
   setProcessor: (id: string, processor: FuncCarrier) => void;
   setInputDevice: (device: Connection | undefined) => void;
-  setInputDeviceName: (deviceName: string | undefined) => void;
+  setInputDeviceName: (inDeviceName: string | undefined) => void;
+  setOutputDeviceName: (outDeviceName: string | undefined) => void;
   setOutputDevice: (device: Output | undefined) => void;
   setModuleData: (id: string, data: any) => void;
   setStartMessage: (msg: MidiData) => void;
@@ -110,7 +117,7 @@ export interface FilterModuleData {
   "SYS REAL TIME SYS": boolean;
 }
 
-const defaultFilterModuleSettings = {
+const defaultFilterModuleSettings: FilterModuleData = {
   "NOTE ON": false,
   "NOTE OFF": false,
   "POLYPHONIC AFTERTOUCH": false,
@@ -134,8 +141,15 @@ const defaultFilterModuleSettings = {
   "SYS REAL TIME SYS": false,
 };
 
-const defaultCodeModuleSettings = {
-  code: `console.log("hello)`,
+export interface CodeModuleData {
+  codeText: string;
+}
+
+const defaultCodeModuleSettings: CodeModuleData = {
+  codeText: `
+  //all code blocks have acces to a data variable
+  //they must return a data variable
+  return data`,
 };
 
 const defaultLoggerSettings = {};
@@ -189,21 +203,13 @@ export const useStore = create<TodoState>()(
             expanded: false,
           },
         ],
-        globals: [
-          {
-            name: "mystring",
-            value: "testvalue",
-          },
-          {
-            name: "mystring2",
-            value: "testvalue2",
-          },
-        ],
+        globals: [],
         startMessage: undefined,
         midiChain: [],
         outputDevice: undefined,
         inputDevice: undefined,
         inputDeviceName: undefined,
+        outputDeviceName: undefined,
         showProcessingIndicator: false,
         showOutputIndicator: false,
         setMidiChainData: (dataArr) => {
@@ -229,6 +235,23 @@ export const useStore = create<TodoState>()(
         addGlobal: (global) => {
           set((state) => ({
             globals: [...state.globals, global],
+          }));
+        },
+        updateGlobal: (id, value) => {
+          set((state) => ({
+            globals: state.globals.map((g) =>
+              g.id === id ? { ...g, value: value } : g
+            ),
+          }));
+        },
+        deleteGlobal: (id) => {
+          set((state) => ({
+            globals: state.globals.filter((g) => g.id !== id),
+          }));
+        },
+        clearGlobals: () => {
+          set((state) => ({
+            globals: [],
           }));
         },
         clearMidiChain: () => {
@@ -288,6 +311,11 @@ export const useStore = create<TodoState>()(
         setOutputDevice: (outDevice) => {
           set((state) => ({
             outputDevice: outDevice,
+          }));
+        },
+        setOutputDeviceName: (outDeviceName) => {
+          set((state) => ({
+            outputDeviceName: outDeviceName,
           }));
         },
         setInputDevice: (inDevice) => {

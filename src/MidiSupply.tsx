@@ -1,10 +1,11 @@
 import { MidiSelector } from "./MidiSelector";
 import React, { useEffect, useState } from "react";
-import { useMap, MapOrEntries } from "usehooks-ts";
+import { useMap, MapOrEntries, useEffectOnce } from "usehooks-ts";
 import "bootstrap/dist/css/bootstrap.css";
 import { useMIDI, Input, Output, useMIDIMessage } from "@react-midi/hooks";
 import { useStore } from "./store";
 import { motion, useAnimationControls } from "framer-motion";
+import { setTimeout } from "timers/promises";
 
 interface MidiSupplyProps {
   inputs: Input[];
@@ -24,6 +25,8 @@ const MidiSupply = ({
     inputDeviceName,
     inputDevice,
     outputDevice,
+    outputDeviceName,
+    setOutputDeviceName,
   } = useStore();
   const [activeInput, setactiveInput] = useState<Input | undefined>(
     inputs.find((i) => i.name === inputDeviceName)
@@ -32,15 +35,9 @@ const MidiSupply = ({
     console.log(inputDeviceName);
     setactiveInput(inputs.find((i) => i.name === inputDeviceName));
   }, [inputDeviceName, inputs]);
-  // console.log(inputs.find((i) => i.name === inputDeviceName));
-  // const [activeInput, setactiveInput] = useState<Input | undefined>(
-  //   inputs[0] ?? undefined
-  // );
   const [activeOutput, setactiveOutput] = useState<Output | undefined>(
     outputs[0] ?? undefined
   );
-
-  // console.log(activeInput);
 
   return (
     <div>
@@ -48,7 +45,7 @@ const MidiSupply = ({
       <MidiSelector
         midiType="input"
         activeItem={activeInput}
-        // selectedKeys={[inputDeviceName]}
+        selectedKeys={[inputDeviceName]}
         onSelectionChange={(connection) => {
           setactiveInput(connection as Input);
           setInputDeviceName(connection.name);
@@ -69,7 +66,10 @@ const MidiSupply = ({
         onSelectionChange={(connection) => {
           setactiveOutput(connection as Output);
           setOutputDevice(connection as Output);
+          setOutputDeviceName(connection.name);
+          console.log(connection);
         }}
+        selectedKeys={[outputDeviceName]}
         midiItems={outputs}
         noItemsMessage="No Outputs Detected"
         isProcessing={showOutputIndicator}

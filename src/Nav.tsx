@@ -23,7 +23,7 @@ const downloadFile = (myData: any) => {
 
 const Nav = (): JSX.Element => {
   const [storeJSON, setStoreJSON] = useLocalStorage("midi-storage", undefined);
-  const { clearMidiChain } = useStore();
+  const { clearMidiChain, clearGlobals } = useStore();
 
   return (
     <Navbar
@@ -64,6 +64,7 @@ const Nav = (): JSX.Element => {
         <Navbar.Link
           onClick={(e) => {
             clearMidiChain();
+            clearGlobals();
           }}
         >
           Clear

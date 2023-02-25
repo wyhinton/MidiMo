@@ -1,100 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Text,
-  Dropdown,
-  styled,
-  Card,
-  Spacer,
-} from "@nextui-org/react";
+import { Container, Text, Dropdown, Card, Spacer } from "@nextui-org/react";
 import { Connection, Input, Output } from "@react-midi/hooks";
-import Box from "./Box";
-import { motion, useAnimationControls } from "framer-motion";
-import useDebounce from "./useDebounce";
 import useInterval from "./UseInterval";
 import { useStore, MidiData } from "./store";
-
-function clamp(input: number, min: number, max: number): number {
-  return input < min ? min : input > max ? max : input;
-}
-
-interface ChannelIndicatorProps {
-  midiData: MidiData | undefined;
-}
+import { map } from "./utils";
 
 function hasNumber(myString: string) {
   return /\d/.test(myString);
-}
-
-const ChannelIndicator = ({ midiData }: ChannelIndicatorProps): JSX.Element => {
-  const channels = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
-  const size = 10;
-  if (midiData) {
-    // console.log(midiData.eventType.split(" ")[1]);
-  }
-  const [ledValue, setledValue] = useState(0);
-  const defaultColor = "rgba(0,0,0,1)";
-  // const defaultColor = "rgba(245,165,35,0)";
-  const [ledBgColor, setLedBgColor] = useState("rgba(245,165,35,0)");
-  useEffect(() => {
-    if (ledValue < 100) {
-      setledValue(ledValue + 50);
-    }
-  }, [midiData]);
-
-  useEffect(() => {
-    const alpha = easeOutCubic(map(ledValue, 0, 100, 0, 1));
-    setLedBgColor(`rgba(245,165,35,${alpha})`);
-  }, [ledValue]);
-
-  useInterval(
-    () => {
-      // Your custom logic here
-      if (ledValue > 0) {
-        setledValue(ledValue - 5);
-      }
-    },
-    // Delay in milliseconds or null to stop it
-    10
-  );
-
-  return (
-    <Container display="flex" justify="center" alignItems="baseline">
-      {channels.map((c, i) => {
-        return (
-          <>
-            <div
-              style={{
-                width: size,
-                height: size,
-                // border: "1px solid white",
-                backgroundColor:
-                  midiData && midiData.eventType.split(" ")[1] === c.toString()
-                    ? ledBgColor
-                    : defaultColor,
-                borderRadius: "100%",
-              }}
-            >
-              {/* {c} */}
-            </div>
-            <Spacer x={0.1} />
-          </>
-        );
-      })}
-    </Container>
-  );
-};
-
-function map(
-  current: number,
-  in_min: number,
-  in_max: number,
-  out_min: number,
-  out_max: number
-): number {
-  const mapped: number =
-    ((current - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
-  return clamp(mapped, out_min, out_max);
 }
 
 function Showcase({
@@ -130,10 +42,8 @@ interface MidiSelectorProps {
   activeItem: Input | Output | undefined;
   midiType: "input" | "output";
   onSelectionChange: (connection: Connection) => any;
+  selectedKeys: (string | undefined)[];
   isProcessing?: boolean;
-}
-function getTween(b: number, e: number, i: number) {
-  return b + (i / 99) * (e - b);
 }
 
 function easeOutCubic(x: number): number {
@@ -149,6 +59,7 @@ export const MidiSelector = ({
   midiType,
   onSelectionChange,
   isProcessing,
+  selectedKeys,
 }: MidiSelectorProps) => {
   const [hasItems, sethasItems] = useState(false);
   const [selected, setSelected] = React.useState<Set<string> | undefined>(
@@ -181,22 +92,6 @@ export const MidiSelector = ({
   );
 
   const { startMessage } = useStore();
-  useEffect(() => {
-    // console.log(activeItem);
-    // if (activeItem && midiType == "input") {
-    //   activeItem = activeItem as Input;
-    //   // if (!activeItem.messageListeners.trig) {
-    //   activeItem.messageListeners = {
-    //     ...activeItem?.messageListeners,
-    //     trig: (msg) => {
-    //       console.log("ADDING TO VALUE");
-    //       setValue(value + 5);
-    //     },
-    //   };
-    //   // }
-    // }
-    // setValue(value + 5);
-  }, [startMessage, value]);
 
   useEffect(() => {
     const alpha = easeOutCubic(map(value, 0, 100, 0, 1));
@@ -210,6 +105,9 @@ export const MidiSelector = ({
   return (
     <Card
       css={{
+        width: "50%",
+        marginRight: midiType === "output" ? "50%" : "",
+        marginLeft: midiType === "input" ? "0" : "50%",
         justifyContent: "center",
         padding: 10,
         // backgroundColor: bgColor,
@@ -223,9 +121,7 @@ export const MidiSelector = ({
       <Showcase label={label + ":"}>
         <Dropdown>
           <Dropdown.Button rounded flat>
-            {hasItems && selected
-              ? (Array.from(selected.entries())[0][0] as string)
-              : noItemsMessage}
+            {selectedKeys[0]}
           </Dropdown.Button>
           {hasItems && (
             <Dropdown.Menu
@@ -243,7 +139,8 @@ export const MidiSelector = ({
                   onSelectionChange(selectedMidiItem);
                 }
               }}
-              selectedKeys={selected}
+              //@ts-ignore
+              selectedKeys={selectedKeys}
               aria-label="Static Actions"
             >
               {midiItems.map((item) => {
@@ -255,7 +152,6 @@ export const MidiSelector = ({
           )}
         </Dropdown>
       </Showcase>
-      {/* <ChannelIndicator midiData={startMessage} /> */}
     </Card>
   );
 };

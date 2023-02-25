@@ -12,6 +12,7 @@ import FilterModule from "./FilterModule";
 import { Item, ItemParams, Menu, useContextMenu } from "react-contexify";
 import { createPortal } from "react-dom";
 import { useOnClickOutside } from "usehooks-ts";
+import Portal from "./Portal";
 
 const getModule = {
   Code: (
@@ -36,13 +37,6 @@ interface DragSectionProps {
   midiData: MidiData | undefined;
 }
 
-function Portal({ children }: { children: JSX.Element | JSX.Element[] }) {
-  return createPortal(
-    children,
-    document.querySelector("#menuportal") as HTMLDivElement
-  );
-}
-
 const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
   const { modules, toggleCompletedState, toggleExpanded, deleteModule } =
     useStore();
@@ -54,6 +48,7 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
   const [selectedModule, setSelectedModule] = useState<ModuleData | undefined>(
     undefined
   );
+  const [contextMenuVisible, setContextMenuVisible] = useState(false);
 
   function handleContextMenu(event: any, moduleData: ModuleData) {
     let menudiv = document.querySelector("#menuportal") as HTMLDivElement;
@@ -70,8 +65,6 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
   }
 
   const handleItemClick = ({ id, event, props }: ItemParams) => {
-    let menudiv = document.querySelector("#menuportal") as HTMLDivElement;
-    menudiv.style.display = "none";
     if (id === "delete") {
       if (selectedModule) {
         deleteModule(selectedModule?.id);
@@ -85,6 +78,7 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
   const handleClickOutside = () => {
     let menudiv = document.querySelector("#menuportal") as HTMLDivElement;
     menudiv.style.display = "none";
+    setContextMenuVisible(false);
     // console.log("clicked outside");
   };
 
@@ -94,7 +88,7 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
   // But in this example everything is just done in one place for simplicity
   return (
     <>
-      <Portal>
+      <Portal visible={contextMenuVisible} divId="#menuportal">
         <Card ref={ref} css={{ pointerEvents: "all" }}>
           <Menu id={MENU_ID} onVisibilityChange={trackVisibility}>
             <div className="menu-item-container">

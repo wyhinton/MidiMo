@@ -85,11 +85,11 @@ function App() {
               // reset the state of your app so the error doesn't happen again
             }}
           >
-            <SetBpm
+            {/* <SetBpm
               onBpmChange={(bpm) => {
                 console.log(bpm);
               }}
-            />
+            /> */}
             <MidiCheck>
               {(inputs, outputs) => {
                 return (

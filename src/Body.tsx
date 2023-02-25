@@ -70,13 +70,15 @@ function Body({ midiInput, midiOutput }: BodyProps) {
     setShowProcessingIndicator,
     outputDevice,
     setShowOutputIndicator,
+    globals,
+    updateGlobal,
   } = useStore();
 
   let smidi = {};
   useEffect(() => {
     //@ts-ignore
     if (midiInput) {
-      console.log(midiInput);
+      // console.log(midiInput);
       midiInput.onmidimessage = (msg: any) => {
         // console.log(msg);
         smidi = {
@@ -91,15 +93,17 @@ function Body({ midiInput, midiOutput }: BodyProps) {
         setTChain(results);
         const finalOutput = results[results.length - 1];
         setShowAction(true);
+        // console.log(outputDevice);
         if (finalOutput) {
           try {
             // outputDevice?.send([243, 0, 64]);
-            if (outputDevice && !finalOutput.blocked) {
-              outputDevice?.send(finalOutput.data);
+            if (midiOutput && !finalOutput.blocked) {
+              midiOutput?.send(finalOutput.data);
+              // outputDevice?.send(finalOutput.data);
               setShowOutputIndicatorLocal(true);
 
               const hideOutputIndicatorTimer = setTimeout(() => {
-                console.log("running output desc");
+                // console.log("running output desc");
                 if (showOutputIndicatorLocal) {
                   setShowOutputIndicatorLocal(false);
                 }
@@ -113,6 +117,12 @@ function Body({ midiInput, midiOutput }: BodyProps) {
             );
           }
         }
+        globals.forEach((g) => {
+          //@ts-ignore
+          updateGlobal(g.id, window.midi[g.name]);
+          //@ts-ignore
+          // console.log("settings global ", g, window.midi[g.name]);
+        });
         setFinalOutput(finalOutput);
       };
     }
@@ -141,45 +151,11 @@ function Body({ midiInput, midiOutput }: BodyProps) {
       setStartMessage(currentMidiMessage);
     }
   }, [currentMidiMessage]);
-  //PROCESS FINAL OUTPUT
-  // useEffect(() => {
-  //   console.log(finalOutput);
-  //   if (finalOutput) {
-  //     try {
-  //       // outputDevice?.send([243, 0, 64]);
-  //       if (outputDevice && !finalOutput.blocked) {
-  //         outputDevice?.send(finalOutput.data);
-  //         setShowOutputIndicatorLocal(true);
-
-  //         const hideOutputIndicatorTimer = setTimeout(() => {
-  //           console.log("running output desc");
-  //           if (showOutputIndicatorLocal) {
-  //             setShowOutputIndicatorLocal(false);
-  //           }
-  //         }, INDICATOR_LENGTH);
-  //         // return () => clearTimeout(hideOutputIndicatorTimer);
-  //       }
-  //     } catch (e) {
-  //       console.error(e);
-  //       console.error(`could send midi message ${JSON.stringify(finalOutput)}`);
-  //     }
-  //   }
-  // }, [JSON.stringify(finalOutput)]);
 
   useEffect(() => {
     // console.log(showOut);
     setShowOutputIndicator(showOutputIndicatorLocal);
   }, [showOutputIndicatorLocal]);
-
-  const { flushHeldKeys } = useKeyboardShortcut(
-    ["Delete"],
-    (shortcutKeys) => console.log("Shift + H has been pressed."),
-    {
-      overrideSystem: false,
-      ignoreInputFields: false,
-      repeatOnHold: false,
-    }
-  );
 
   const onDragEnd = (result: DropResult): void => {
     console.log(result);
@@ -188,10 +164,6 @@ function Body({ midiInput, midiOutput }: BodyProps) {
     }
     console.log(result);
     reorder(result.source.index, result.destination.index);
-  };
-  const handleChange = (file: any) => {
-    // setFile(file);
-    console.log(file);
   };
   return (
     <>

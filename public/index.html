@@ -36,6 +36,17 @@
       top: 0;
       pointer-events: none;
     }
+    #fullScreenPortal {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      z-index: 100000000;
+      display: none;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      /* pointer-events: none; */
+    }
   </style>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -68,6 +79,7 @@
       }
     </script>
     <div id="menuportal"></div>
+    <div id="fullScreenPortal"></div>
     <div id="root"></div>
     <!--
       This HTML file is a template.
