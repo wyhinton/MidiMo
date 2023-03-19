@@ -106,92 +106,88 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
       </Portal>
 
       <Collapse.Group css={{ padding: "$xs" }}>
-        <Radio.Group>
-          <Droppable droppableId="droppable">
-            {(provided, snapshot): JSX.Element => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                // style={getListStyle(snapshot.isDraggingOver)}
-              >
-                {modules.map((module, index) => (
-                  <Draggable
-                    key={module.id}
-                    draggableId={module.id}
-                    index={index}
-                  >
-                    {(provided, snapshot): JSX.Element => {
-                      if (snapshot.isDragging) {
-                        //@ts-ignore
-                        provided.draggableProps.style = {
-                          //@ts-ignore
-                          ...provided.draggableProps.style,
-                          //@ts-ignore
-                          left: provided.draggableProps.style.offsetLeft,
-                          //@ts-ignore
-                          top: provided.draggableProps.style.offsetTop,
-                        };
-                      }
+        <Droppable droppableId="droppable">
+          {(provided, snapshot): JSX.Element => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              // style={getListStyle(snapshot.isDraggingOver)}
+            >
+              {modules.map((module, index) => (
+                <Draggable
+                  key={module.id}
+                  draggableId={module.id}
+                  index={index}
+                >
+                  {(provided, snapshot): JSX.Element => {
+                    if (snapshot.isDragging) {
                       //@ts-ignore
-                      // provided.draggableProps.style.padding = "10px";
-                      return (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          // {...provided.dragHandleProps}
-                          // style={getItemStyle(
-                          //   snapshot.isDragging,
-                          //   provided.draggableProps.style
-                          // )}
+                      provided.draggableProps.style = {
+                        //@ts-ignore
+                        ...provided.draggableProps.style,
+                        //@ts-ignore
+                        left: provided.draggableProps.style.offsetLeft,
+                        //@ts-ignore
+                        top: provided.draggableProps.style.offsetTop,
+                      };
+                    }
+                    //@ts-ignore
+                    // provided.draggableProps.style.padding = "10px";
+                    return (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        // {...provided.dragHandleProps}
+                        // style={getItemStyle(
+                        //   snapshot.isDragging,
+                        //   provided.draggableProps.style
+                        // )}
+                      >
+                        <ErrorBoundary
+                          FallbackComponent={ErrorFallback}
+                          onReset={() => {
+                            // reset the state of your app so the error doesn't happen again
+                          }}
                         >
-                          <ErrorBoundary
-                            FallbackComponent={ErrorFallback}
-                            onReset={() => {
-                              // reset the state of your app so the error doesn't happen again
+                          <Card
+                            css={{
+                              backgroundColor: "black",
+                              // marginTop: 10,
+                              border:
+                                selectedModule?.id === module.id
+                                  ? "1px solid white"
+                                  : "",
                             }}
+                            onContextMenu={(e) => handleContextMenu(e, module)}
                           >
-                            <Card
-                              css={{
-                                backgroundColor: "black",
-                                // marginTop: 10,
-                                border:
-                                  selectedModule?.id === module.id
-                                    ? "1px solid white"
-                                    : "",
+                            <CustomCollapse
+                              index={index}
+                              module={module}
+                              onClick={(e) => {
+                                toggleExpanded(module.id);
                               }}
-                              onContextMenu={(e) =>
-                                handleContextMenu(e, module)
-                              }
+                              dragHandleProps={provided.dragHandleProps}
+                              title={module.effectType}
                             >
-                              <CustomCollapse
-                                index={index}
-                                module={module}
-                                onClick={(e) => {
-                                  toggleExpanded(module.id);
-                                }}
-                                dragHandleProps={provided.dragHandleProps}
-                                title={module.effectType}
-                              >
-                                <div>
-                                  {getModule[module.effectType](
-                                    module,
-                                    midiData,
-                                    index
-                                  )}
-                                </div>
-                              </CustomCollapse>
-                            </Card>
-                          </ErrorBoundary>
-                        </div>
-                      );
-                    }}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </Radio.Group>
+                              <div>
+                                {getModule[module.effectType](
+                                  module,
+                                  midiData,
+                                  index
+                                )}
+                              </div>
+                            </CustomCollapse>
+                          </Card>
+                        </ErrorBoundary>
+                      </div>
+                    );
+                  }}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
       </Collapse.Group>
     </>
   );

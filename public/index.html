@@ -60,6 +60,13 @@
         data.data[1] += amount;
       }
 
+      function getChannelData(message) {
+        // Extract the MIDI channel from the status byte
+        const channel = message[0] & 0x0f;
+
+        // Return the channel number (channels are numbered from 1-16, not 0-15)
+        return channel + 1;
+      }
       function isSameNote(data, noteRaw) {
         let noteValData = data.data[1];
         return noteValData == noteRaw;
@@ -77,6 +84,26 @@
           return false;
         }
       }
+
+      function isPitchWheel(midiMessage) {
+        // MIDI pitch wheel messages have a status byte of 0xE0 (224 in decimal)
+        const statusByte = midiMessage[0];
+        if (statusByte === 224) {
+          // The pitch wheel data bytes follow the status byte
+          // and are 14-bit values split across two bytes
+          const dataByte1 = midiMessage[1];
+          const dataByte2 = midiMessage[2];
+
+          // The pitch wheel message can be identified by checking
+          // that the second data byte is between 0 and 127 (inclusive)
+          if (dataByte2 >= 0 && dataByte2 <= 127) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function getChannel(data) {}
     </script>
     <div id="menuportal"></div>
     <div id="fullScreenPortal"></div>

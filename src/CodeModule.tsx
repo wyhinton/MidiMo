@@ -290,13 +290,13 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
                 theme="tomorrow_night_bright"
                 name="blah2"
                 onChange={(val, e) => {
-                  if (fullScreen) {
-                    onChange(val, e);
-                    setModuleData(moduleData.id, {
-                      codeText: val,
-                    } as CodeModuleData);
-                    console.log(val);
-                  }
+                  // if (fullScreen) {
+                  onChange(val, e);
+                  setModuleData(moduleData.id, {
+                    codeText: val,
+                  } as CodeModuleData);
+                  console.log(val);
+                  // }
                 }}
                 fontSize={fontSize}
                 showPrintMargin={true}
@@ -336,11 +336,11 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
             onChange={(val, e) => {
               onChange(val, e);
               setModuleData(moduleData.id, { codeText: val } as CodeModuleData);
-              console.log(editorRef);
+              // console.log(editorRef);
               // console.log(val);
             }}
             onValidate={(annotations) => {
-              console.log(annotations);
+              // console.log(annotations);
             }}
             value={inputFunc}
             height={"200px"}

@@ -15,6 +15,7 @@ import AddNewProcessor from "./AddNewProcessor";
 import { brightColor } from "./theme";
 import { Item, Menu } from "react-contexify";
 import { cloneDeep } from "lodash";
+import { useEffectOnce } from "usehooks-ts";
 
 interface BodyProps {
   midiInput: Input;
@@ -51,6 +52,7 @@ const createFuncChain = (
   return processChain;
 };
 
+
 function Body({ midiInput, midiOutput }: BodyProps) {
   const [currentMidiMessage, setCurrentMidiMessage] = useState<
     MidiData | undefined
@@ -61,6 +63,8 @@ function Body({ midiInput, midiOutput }: BodyProps) {
   const [showAction, setShowAction] = useState(false);
   const [showOutputIndicatorLocal, setShowOutputIndicatorLocal] =
     useState(false);
+
+
 
   const {
     modules,
@@ -98,8 +102,8 @@ function Body({ midiInput, midiOutput }: BodyProps) {
           try {
             // outputDevice?.send([243, 0, 64]);
             if (midiOutput && !finalOutput.blocked) {
+              // console.log(finalOutput);
               midiOutput?.send(finalOutput.data);
-              // outputDevice?.send(finalOutput.data);
               setShowOutputIndicatorLocal(true);
 
               const hideOutputIndicatorTimer = setTimeout(() => {
@@ -119,7 +123,7 @@ function Body({ midiInput, midiOutput }: BodyProps) {
         }
         globals.forEach((g) => {
           //@ts-ignore
-          updateGlobal(g.id, window.midi[g.name]);
+          // updateGlobal(g.id, window.midi[g.name]);
           //@ts-ignore
           // console.log("settings global ", g, window.midi[g.name]);
         });

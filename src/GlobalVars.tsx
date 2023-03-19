@@ -27,7 +27,6 @@ const updateGlobalVar = (v: GlobalVar) => {
   if (w.midi[v.name] !== v.value) {
     w.midi[v.name] = v.value;
   }
-  // console.log(window);
 };
 const MENU_ID = "GLOBAL_VARS";
 const GlobalVars = (): JSX.Element => {
@@ -37,6 +36,7 @@ const GlobalVars = (): JSX.Element => {
     undefined
   );
 
+  const [expanded, setExpanded] = useState(false);
   const { show } = useContextMenu({
     id: MENU_ID,
   });
@@ -82,13 +82,13 @@ const GlobalVars = (): JSX.Element => {
     }
   };
 
-  useEffect(() => {
-    console.log(globals);
-    for (let i = 0; i < globals.length; i++) {
-      const gv = globals[i];
-      updateGlobalVar(gv);
-    }
-  }, [globals]);
+  // useEffect(() => {
+  //   // console.log(globals);
+  //   for (let i = 0; i < globals.length; i++) {
+  //     const gv = globals[i];
+  //     updateGlobalVar(gv);
+  //   }
+  // }, []);
   return (
     <Card>
       {/* <Portal visible={contextMenuVisible} divId="#menuportal">
@@ -114,71 +114,78 @@ const GlobalVars = (): JSX.Element => {
       </Portal> */}
       <Container css={{ width: "100%" }}>
         <Collapse
+          onChange={(e, i, v) => {
+            console.log(v);
+            if (v) {
+              setExpanded(v);
+            }
+          }}
           id={"global-vars-collapse"}
           css={{ borderRadius: "0px", textAlign: "center" }}
           title={"Global Variables"}
         >
-          <Table width={"100%"} css={{ padding: "0" }}>
-            <Table.Header>
-              <Table.Column>Name</Table.Column>
-              <Table.Column>Value</Table.Column>
-              <Table.Column>Default Value</Table.Column>
-              <Table.Column>Delete</Table.Column>
-            </Table.Header>
-            <Table.Body>
-              {globals.map((g, i) => {
-                return (
-                  <Table.Row
-                    css={{
-                      border:
-                        g.id === selectedGlobal?.id ? "1px solid white" : "",
-                    }}
-                  >
-                    <Table.Cell>
-                      <div onContextMenu={(e) => handleContextMenu(e, g)}>
-                        <span
-                          style={{
-                            fontFamily: "monospace",
-                            color: "#0072F5",
+          {expanded && (
+            <Table width={"100%"} css={{ padding: "0" }}>
+              <Table.Header>
+                <Table.Column>Name</Table.Column>
+                <Table.Column>Value</Table.Column>
+                <Table.Column>Default Value</Table.Column>
+                <Table.Column>Delete</Table.Column>
+              </Table.Header>
+              <Table.Body>
+                {globals.map((g, i) => {
+                  return (
+                    <Table.Row
+                      css={{
+                        border:
+                          g.id === selectedGlobal?.id ? "1px solid white" : "",
+                      }}
+                    >
+                      <Table.Cell>
+                        <div onContextMenu={(e) => handleContextMenu(e, g)}>
+                          <span
+                            style={{
+                              fontFamily: "monospace",
+                              color: "#0072F5",
+                            }}
+                          >
+                            window.midi.
+                          </span>
+                          <Input
+                            // onChange={(e) => {
+                            //   console.log(e);
+                            //   console.log(e.target.value);
+                            // }}
+                            underlined
+                            initialValue={g.name}
+                          />
+                        </div>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <div>{_.toString(g.value)}</div>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Input bordered initialValue={g.value.toString()} />
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Button
+                          onClick={(e) => {
+                            deleteGlobal(g.id);
+                            //@ts-ignore
+                            delete window.midi[g.name];
                           }}
-                        >
-                          window.midi.
-                        </span>
-                        <Input
-                          onChange={(e) => {
-                            console.log(e);
-                            console.log(e.target.value);
-                          }}
-                          underlined
-                          initialValue={g.name}
+                          bordered
+                          auto
+                          icon={<i className={"fa fa-trash"}></i>}
                         />
-                      </div>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <div>{_.toString(g.value)}</div>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Input bordered initialValue={g.value.toString()} />
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Button
-                        onClick={(e) => {
-                          deleteGlobal(g.id);
-                          // console.log(window);
-                          //@ts-ignore
-                          delete window.midi[g.name];
-                          // console.log(window);
-                        }}
-                        bordered
-                        auto
-                        icon={<i className={"fa fa-trash"}></i>}
-                      />
-                    </Table.Cell>
-                  </Table.Row>
-                );
-              })}
-            </Table.Body>
-          </Table>
+                      </Table.Cell>
+                    </Table.Row>
+                  );
+                })}
+              </Table.Body>
+            </Table>
+          )}
+
           <Grid xs={12} justify="space-around">
             <Button
               onClick={(e) => {
