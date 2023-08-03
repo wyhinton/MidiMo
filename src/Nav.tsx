@@ -38,6 +38,7 @@ const Nav = (): JSX.Element => {
         background: "rgba(0,0,0,0)",
       }}
     >
+      {/* <MenuButton/> */}
       <Navbar.Content hideIn="xs">
         <Navbar.Link href="#">Features</Navbar.Link>
         <Navbar.Link isActive href="#">

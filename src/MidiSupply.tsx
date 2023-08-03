@@ -1,4 +1,4 @@
-import { MidiSelector } from "./MidiSelector";
+import { MidiSelector } from "./Menues/MidiSelector";
 import React, { useEffect, useState } from "react";
 import { useMap, MapOrEntries, useEffectOnce } from "usehooks-ts";
 import "bootstrap/dist/css/bootstrap.css";

@@ -11,7 +11,7 @@ import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { getMessageType } from "./utils";
 import "font-awesome/css/font-awesome.min.css";
 import GlobalVars from "./GlobalVars";
-import AddNewProcessor from "./AddNewProcessor";
+import AddNewProcessor from "./Menues/AddNewProcessor";
 import { brightColor } from "./theme";
 import { Item, Menu } from "react-contexify";
 import { cloneDeep } from "lodash";
@@ -52,7 +52,6 @@ const createFuncChain = (
   return processChain;
 };
 
-
 function Body({ midiInput, midiOutput }: BodyProps) {
   const [currentMidiMessage, setCurrentMidiMessage] = useState<
     MidiData | undefined
@@ -63,8 +62,6 @@ function Body({ midiInput, midiOutput }: BodyProps) {
   const [showAction, setShowAction] = useState(false);
   const [showOutputIndicatorLocal, setShowOutputIndicatorLocal] =
     useState(false);
-
-
 
   const {
     modules,
@@ -170,51 +167,32 @@ function Body({ midiInput, midiOutput }: BodyProps) {
     reorder(result.source.index, result.destination.index);
   };
   return (
-    <>
-      <Container gap={5} css={{ padding: 0 }}>
-        <Card css={{ overflow: "visible" }}>
-          <Container
-            alignItems="center"
-            display="flex"
-            justify="center"
-            css={{
-              padding: 0,
-            }}
-          >
-            {/* <Text>{JSON.stringify(inputMidiMsg)}</Text> */}
-            {/* <Text>{JSON.stringify(outputMidiMsg)}</Text> */}
-          </Container>
-          <div
-            style={{
-              // backgroundColor: showAction ? "green" : "red",
-              padding: "10 10 0 0 ",
-            }}
-          >
-            <AddNewProcessor />
-            <GlobalVars />
-            <div
-              className="rounded-10 card"
-              id="processor-container"
-              style={{
-                backgroundColor: brightColor,
-                maxHeight: "50vh",
-                overflowY: "auto",
-              }}
-            >
-              <DragDropContext
-                onDragStart={(start, provided) => {
-                  console.log(start);
-                  console.log(provided);
-                }}
-                onDragEnd={onDragEnd}
-              >
-                <DragSection midiData={currentMidiMessage} />
-              </DragDropContext>
-            </div>
-          </div>
-        </Card>
-      </Container>
-    </>
+    <div
+      className="col-12 align-items-center justify-center"
+      style={{ border: "1px solid red" }}
+    >
+      <AddNewProcessor />
+      <GlobalVars />
+      <div
+        className="rounded-10 card"
+        id="processor-container"
+        style={{
+          backgroundColor: brightColor,
+          maxHeight: "50vh",
+          overflowY: "auto",
+        }}
+      >
+        <DragDropContext
+          onDragStart={(start, provided) => {
+            console.log(start);
+            console.log(provided);
+          }}
+          onDragEnd={onDragEnd}
+        >
+          <DragSection midiData={currentMidiMessage} />
+        </DragDropContext>
+      </div>
+    </div>
   );
 }
 

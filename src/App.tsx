@@ -14,6 +14,8 @@ import useStore from "./store";
 import SetBpm from "./SetBpm";
 import { useEffectOnce } from "usehooks-ts";
 import useKeyboardShortcut from "use-keyboard-shortcut";
+import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import 'bootstrap/dist/css/bootstrap.css';
 
 const Line = (): JSX.Element => {
   return (
@@ -131,24 +133,8 @@ function App() {
     <div {...getRootProps()} className="App">
       {isDragActive && <DragPopup />}
       <Nav />
-      <Container
-        css={{
-          width: "100%",
-          paddingLeft: 0,
-          gap: "0px",
-          height: "100%",
-          // backgroundColor: "$background",
-        }}
-      >
-        <Container
-          sm
-          css={{
-            py: "$xl",
-            dflex: "center",
-            gap: "$lg",
-            flexFlow: "column  nowrap",
-            height: "100%",
-          }}
+        <div
+        className="col-12 d-flex justify-content-center pt-5 m-auto"
         >
           <ErrorBoundary
             FallbackComponent={ErrorFallback}
@@ -179,8 +165,7 @@ function App() {
               }}
             </MidiCheck>
           </ErrorBoundary>
-        </Container>
-      </Container>
+        </div>
     </div>
   );
 }

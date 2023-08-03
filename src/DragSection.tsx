@@ -1,18 +1,19 @@
 import React, { useRef, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import useStore, { MidiData, ModuleData } from "./store";
-import CodeModule from "./CodeModule";
+import CodeModule from "./Modules/CodeModule";
 import { Collapse, Radio, Text, Card, Container } from "@nextui-org/react";
 import ToggleButton from "./ToggleButton";
 import Logger from "./Logger";
 import CustomCollapse from "./CollapseCustom";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "./ErrorFallback";
-import FilterModule from "./FilterModule";
+import FilterModule from "./Modules/FilterModule";
 import { Item, ItemParams, Menu, useContextMenu } from "react-contexify";
 import { createPortal } from "react-dom";
 import { useOnClickOutside } from "usehooks-ts";
 import Portal from "./Portal";
+import EnvelopeModule from "./Modules/Envelope";
 
 const getModule = {
   Code: (
@@ -32,6 +33,13 @@ const getModule = {
   ) => (
     <FilterModule moduleData={moduleData} midiData={midiData} index={index} />
   ),
+  Envelope: (
+    moduleData: ModuleData,
+    midiData: MidiData | undefined,
+    index: number
+  ) => (
+    <EnvelopeModule moduleData={moduleData} midiData={midiData} index={index} />
+  )
 };
 interface DragSectionProps {
   midiData: MidiData | undefined;
@@ -87,7 +95,7 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   return (
-    <>
+    <div className = {"w-100"}>
       <Portal visible={contextMenuVisible} divId="#menuportal">
         <Card ref={ref} css={{ pointerEvents: "all" }}>
           <Menu id={MENU_ID} onVisibilityChange={trackVisibility}>
@@ -105,12 +113,13 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
         </Card>
       </Portal>
 
-      <Collapse.Group css={{ padding: "$xs" }}>
+      <Collapse.Group css={{ padding: "$xs", width: "100%"}}>
         <Droppable droppableId="droppable">
           {(provided, snapshot): JSX.Element => (
             <div
               {...provided.droppableProps}
               ref={provided.innerRef}
+              style={{width: "100%"}}
               // style={getListStyle(snapshot.isDraggingOver)}
             >
               {modules.map((module, index) => (
@@ -189,7 +198,7 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
           )}
         </Droppable>
       </Collapse.Group>
-    </>
+    </div>
   );
 };
 

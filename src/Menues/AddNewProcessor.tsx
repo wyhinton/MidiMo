@@ -1,8 +1,9 @@
 import { Dropdown } from "@nextui-org/react";
 import React, { useState, useEffect, useRef } from "react";
-import { EffectType } from "./types";
-import { useStore } from "./store";
-import { brightColor } from "./theme";
+import { EffectType } from "../types";
+import { useStore } from "../store";
+import { brightColor } from "../theme";
+import { moduleDefaultsDict } from "../Modules/ModuleDefaults";
 
 const AddNewProcessor = (): JSX.Element => {
   const { addModule } = useStore();
@@ -33,6 +34,7 @@ const AddNewProcessor = (): JSX.Element => {
         <Dropdown.Item key="Code">Code</Dropdown.Item>
         <Dropdown.Item key="Logger">Logger</Dropdown.Item>
         <Dropdown.Item key="Filter">Filter</Dropdown.Item>
+        <Dropdown.Item key="Envelope">Envelope</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );

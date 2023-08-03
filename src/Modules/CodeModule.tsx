@@ -3,7 +3,7 @@ import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
 import docco from "react-syntax-highlighter/dist/esm/styles/hljs/docco";
 import { useMap, MapOrEntries } from "usehooks-ts";
-import "./App.css";
+import "../App.css";
 import AceEditor from "react-ace";
 import {
   Grid,
@@ -20,16 +20,16 @@ import "ace-builds/src-noconflict/theme-tomorrow_night_bright.js";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/theme-tomorrow_night_bright";
 import "ace-builds/webpack-resolver";
-import { ModuleProps } from "./types";
+import { ModuleProps } from "../types";
 import {
-  CodeModuleData,
   FuncCarrier,
   MidiData,
   MidiProcessor,
   useStore,
-} from "./store";
+} from "../store";
 import useKeyboardShortcut from "use-keyboard-shortcut";
-import Portal from "./Portal";
+import Portal from "../Portal";
+import { CodeModuleData } from "./ModuleDefaults";
 SyntaxHighlighter.registerLanguage("javascript", js);
 interface ExecFunc {
   func: Function;
