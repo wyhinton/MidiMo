@@ -5,11 +5,11 @@ import { MidiData, ModuleData } from "./store";
 import { MessageType, ModuleProps } from "./types";
 import { useStore } from "./store";
 import useMidiChain from "./UseMidiChain";
-import { getNoteEnglishName, isNote } from "./utils";
-import _ from "lodash";
+
 const maxLogLength = 50;
+
 function Logger({ moduleData, index }: ModuleProps) {
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<MidiData[]>([]);
   const { moduleInputMidi } = useMidiChain(index);
   // console.log(moduleInputMidi);
   useEffect(() => {
@@ -17,14 +17,7 @@ function Logger({ moduleData, index }: ModuleProps) {
     // console.log(moduleInputMidi);
     if (moduleInputMidi && !moduleInputMidi.blocked) {
       // console.log(moduleInputMidi);
-      let noteName = "";
-      if (isNote(moduleInputMidi.data)) {
-        let nameToLookup = getNoteEnglishName(moduleInputMidi.data);
-        if (nameToLookup) {
-          noteName = nameToLookup;
-        }
-      }
-      let newLogArr = [...logs, { ...moduleInputMidi, noteName } as any];
+      let newLogArr = [...logs, moduleInputMidi];
       if (newLogArr.length > maxLogLength) {
         newLogArr = newLogArr.slice(
           newLogArr.length - maxLogLength,
@@ -77,19 +70,16 @@ function Logger({ moduleData, index }: ModuleProps) {
                 Data
               </Table.Column>
               <Table.Column css={{ backgroundColor: "black" }}>
-                Event
-              </Table.Column>
-              <Table.Column css={{ backgroundColor: "black" }}>
-                Info
-              </Table.Column>
-              <Table.Column css={{ backgroundColor: "black" }}>
                 Device
+              </Table.Column>
+              <Table.Column css={{ backgroundColor: "black" }}>
+                Event
               </Table.Column>
               {/* <Table.Column></Table.Column> */}
               {/* <Table.Column>STATUS</Table.Column> */}
             </Table.Header>
             <Table.Body>
-              {logs.map((log: any, index: number) => {
+              {logs.map((log: MidiData, index: number) => {
                 // const dateString =
                 // log.eventTime.getHours() +
                 // ":" +
@@ -107,16 +97,13 @@ function Logger({ moduleData, index }: ModuleProps) {
                     key={index}
                   >
                     <Table.Cell css={{ fontSize: "$xs" }}>
-                      {_.toString(log.data)}
-                    </Table.Cell>
-                    <Table.Cell css={{ fontSize: "$xs" }}>
-                      {log.eventType}
-                    </Table.Cell>
-                    <Table.Cell css={{ fontSize: "$xs" }}>
-                      {log.noteName}
+                      {JSON.stringify(log.data)}
                     </Table.Cell>
                     <Table.Cell css={{ fontSize: "$xs" }}>
                       {log.deviceName}
+                    </Table.Cell>
+                    <Table.Cell css={{ fontSize: "$xs" }}>
+                      {log.eventType}
                     </Table.Cell>
                   </Table.Row>
                 );

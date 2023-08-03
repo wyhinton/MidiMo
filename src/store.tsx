@@ -233,6 +233,13 @@ export const useStore = create<TodoState>()(
           }));
         },
         addGlobal: (global) => {
+          //@ts-ignore
+          if (!window.midi){
+            //@ts-ignore
+            window.midi = {}
+          }
+          //@ts-ignore
+          window.midi[global.name] = global.defaultValue
           set((state) => ({
             globals: [...state.globals, global],
           }));

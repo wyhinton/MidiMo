@@ -85,6 +85,23 @@
         }
       }
 
+      function setMidiChannel(midiMessage, newChannel) {
+        // Check if the midiMessage is a valid MIDI data message
+        if (midiMessage.length !== 3) {
+          throw new Error('Invalid MIDI data message. MIDI data messages should be 3 bytes long.');
+        }
+
+        // Ensure newChannel is within the range 0 to 15
+        newChannel = Math.min(Math.max(newChannel, 0), 15);
+
+        // Clear the current channel bits and set the new channel
+        let statusByte = midiMessage[0];
+        statusByte = (statusByte & 0xF0) | newChannel;
+
+        // Create a new MIDI data message with the updated channel
+        return [statusByte, midiMessage[1], midiMessage[2]];
+      }
+
       function isPitchWheel(midiMessage) {
         // MIDI pitch wheel messages have a status byte of 0xE0 (224 in decimal)
         const statusByte = midiMessage[0];

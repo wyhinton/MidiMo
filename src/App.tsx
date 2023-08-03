@@ -121,6 +121,7 @@ function App() {
     onDrop,
     noClick: true,
   });
+  
   useEffect(() => {
     console.log(isDragActive);
   }, [isDragActive]);
