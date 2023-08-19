@@ -39,14 +39,36 @@ let styles = {
       stroke: "white"
     }
   };
-
+const ENVELOPE_DURATION = 1
 const EnvelopeModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
   const { setModuleData, setProcessor } = useStore();
   const [filterModuleData, setfilterModuleData] = useState<FilterModuleData>(
     moduleData.data as FilterModuleData
   );
-  // console.log(moduleData);
+  const [envelopePosition, setEnvelopePosition] = useState(0);
+  const triggerEnvelope = () => {
+    let startTime: number;
+  
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = (timestamp - startTime) / ENVELOPE_DURATION; // ENVELOPE_DURATION is the total duration for the envelope
+  
+      if (progress < 1) {
+        // Update the envelope position
+        setEnvelopePosition(progress);
+  
+        // Continue animation
+        requestAnimationFrame(animate);
+      } else {
+        // Envelope animation is complete
+        setEnvelopePosition(0); // Reset the envelope position
+      }
+    };
+  
+    requestAnimationFrame(animate);
+  };
 
+  
   useEffect(() => {
     setModuleData(moduleData.id, filterModuleData);
     setProcessor(moduleData.id, { func: (data)=>{
@@ -58,7 +80,11 @@ const EnvelopeModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
   return (
     <Container gap={1}>
         <div>hello</div>
-        <EnvelopeGraph defaultXa={1} defaultYa={1} defaultYs={1} defaultXd={1} defaultXr={1} styles= {styles}/>
+        <button onClick={triggerEnvelope}>Trigger Envelope</button>
+        <EnvelopeGraph 
+     ya={1 - envelopePosition * 0.5}
+     ys={envelopePosition * 0.5}
+        defaultXa={1} defaultYa={1} defaultYs={1} defaultXd={1} defaultXr={1} styles= {styles}/>
     </Container>
   );
 };

@@ -40,7 +40,7 @@ const MidiSupply = ({
   );
 
   return (
-    <div>
+    <>
       {/* <motion.div animate={controls}> */}
       <MidiSelector
         midiType="input"
@@ -75,7 +75,7 @@ const MidiSupply = ({
         isProcessing={showOutputIndicator}
         label="Output Device"
       />
-    </div>
+    </>
   );
 };
 

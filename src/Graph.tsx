@@ -8,6 +8,8 @@ interface EnvelopeGraphProps {
   defaultXr: number;
   defaultYa: number;
   defaultYs: number;
+  ya: number;
+  ys: number;
   ratio?: {
     xa: number;
     xd: number;
@@ -37,6 +39,8 @@ interface EnvelopeGraphProps {
   corners?: boolean;
 }
 
+
+
 const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
   const [state, setState] = useState<{
     xa: number;
@@ -51,7 +55,7 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
       xd: number;
       xr: number;
     };
-  }>({ xa: 0, xd: 0, xr: 0, ya: 0, ys: 0, drag: null, svgRatio: { width: 0, height: 0 }, ratio: { xa: 0, xd: 0, xr: 0 } });
+  }>({ xa: 0, xd: 0, xr: 0, ya: props.ya, ys: props.ys, drag: null, svgRatio: { width: 0, height: 0 }, ratio: { xa: 0, xd: 0, xr: 0 } });
 
   const {
     defaultXa,
@@ -78,7 +82,7 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
     ].map((key) => (styles[key] = parseFloat(computedStyle[key])));
     return styles;
   };
-
+  const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 });
   const boxRef = React.createRef<SVGSVGElement>();
   useEffect(() => {
 
@@ -132,17 +136,18 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
     return () => {
       window.removeEventListener("resize", onWindowResize);
       window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("mousemove", handleMouseMove);
+    //   window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
 
+  const defaultMargin = 5;
   const viewBox = {
     width: 100,
     height: 20,
-    marginTop: 0,
-    marginRight: 0,
-    marginBottom: 0,
-    marginLeft: 0,
+    marginTop: defaultMargin,
+    marginRight: defaultMargin,
+    marginBottom: defaultMargin,
+    marginLeft: defaultMargin,
     // marginTop:
     //   2 *
     //     (styles.corners.strokeWidth +
@@ -263,9 +268,9 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
     setState((prevState) => ({ ...prevState, drag: null }));
   };
 
-  const handleMouseMove = (event: MouseEvent) => {
+  const handleMouseMove = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     event.stopPropagation();
-
+    console.log(event)
     const [
       attackWidth,
       decayWidth,
@@ -292,6 +297,10 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
           newState.xa = xaNew;
         }
         setState(newState);
+           setCurrentPosition({
+        x: attackWidth,
+        y: viewBox.height,
+      });
       } else if (drag === "decaysustain") {
         const ysNew =
           1 -
@@ -389,7 +398,7 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
   const w = viewBox.width + viewBox.marginLeft + viewBox.marginRight;
   const h = viewBox.height + viewBox.marginTop + viewBox.marginBottom;
   const vb = `0 0 ${w} ${h}`;
-
+  const {marginLeft, marginTop } = viewBox;
   return (
     <svg
       style={style}
@@ -397,14 +406,20 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
       viewBox={vb}
       ref={boxRef}
       onMouseUp={handleMouseUp}
-    //   onMouseMove={handleMouseMove}
+      onMouseMove={handleMouseMove}
     >
       <path
-        transform={`translate(${viewBox.marginLeft}, ${viewBox.marginTop})`}
+        transform={`translate(${marginLeft}, ${marginTop})`}
         d={generatePath()}
         style={{ ...styles.line }}
         vectorEffect="non-scaling-stroke"
       />
+        <circle
+        cx={marginLeft + currentPosition.x}
+        cy={marginTop + currentPosition.y}
+        r="1" // Adjust the radius of the circle as per your requirement
+        fill="red" // You can change the color of the circle here
+    />
       {corners ? renderCorners() : null}
       {renderDnDRect("attack")}
       {renderDnDRect("decaysustain")}

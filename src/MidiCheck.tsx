@@ -13,13 +13,13 @@ const MidiCheck = ({ children }: MidiSupplyProps): JSX.Element => {
   //   console.log(inputs, outputs);
   // }, [inputs, outputs]);
   return (
-    <div>
+    <>
       {hasMIDI && inputs.length > 0 && outputs.length > 0 ? (
         children(inputs, outputs)
       ) : (
         <div>No midi inputs/outputs/midi not suzported</div>
       )}
-    </div>
+    </>
   );
 };
 

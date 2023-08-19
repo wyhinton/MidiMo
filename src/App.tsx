@@ -14,8 +14,9 @@ import useStore from "./store";
 import SetBpm from "./SetBpm";
 import { useEffectOnce } from "usehooks-ts";
 import useKeyboardShortcut from "use-keyboard-shortcut";
-import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import 'bootstrap/dist/css/bootstrap.css';
+import SideBar from "./SideBar";
+import "./styles.scss"
 
 const Line = (): JSX.Element => {
   return (
@@ -130,12 +131,18 @@ function App() {
 
 
   return (
-    <div {...getRootProps()} className="App">
+    <div className="d-flex">
+    <SideBar></SideBar>
+    <div {...getRootProps()} className="App w-100">
+
       {isDragActive && <DragPopup />}
+
       <Nav />
         <div
-        className="col-12 d-flex justify-content-center pt-5 m-auto"
+        className="col-6 justify-content-center pt-5 m-auto"
         >
+          
+
           <ErrorBoundary
             FallbackComponent={ErrorFallback}
             onReset={() => {
@@ -153,11 +160,11 @@ function App() {
                   <MidiSupply inputs={inputs} outputs={outputs}>
                     {(input, output) => {
                       return (
-                        <div>
+                        <>
                           <Line />
                           <Body midiInput={input} midiOutput={output} />
                           <Line />
-                        </div>
+                        </>
                       );
                     }}
                   </MidiSupply>
@@ -166,6 +173,7 @@ function App() {
             </MidiCheck>
           </ErrorBoundary>
         </div>
+    </div>
     </div>
   );
 }
