@@ -120,7 +120,61 @@
         return false;
       }
 
+      function getProgramChangeNumber(data){
+        const status = data[0]
+        console.log(data)
+        if (status >= 0xC0 && status <= 0xCF) {
+            const programNumber = data[1];
+            console.log(`Program change: Program ${programNumber}`);
+            return programNumber;
+          }
+        return undefined;
+      }
+
       function getChannel(data) {}
+
+      function changeControlNumber(originalMessage, newControlNumber) {
+        if (originalMessage.length !== 3) {
+          throw new Error('Invalid MIDI Control Change message. Expected 3 bytes.');
+        }
+
+        if (newControlNumber < 0 || newControlNumber > 127) {
+          throw new Error('Invalid control number. It should be in the range of 0 to 127.');
+        }
+
+        const [statusByte, originalControlNumber, dataByte] = originalMessage;
+
+        if (statusByte < 0xB0 || statusByte > 0xBF) {
+          throw new Error('Invalid status byte. Expected Control Change message (0xBn).');
+        }
+
+        const newStatusByte = statusByte | (newControlNumber >> 4); // Set the first 4 bits of new control number
+        const newDataByte = newControlNumber & 0x0F; // Keep the last 4 bits of new control number
+
+        return [newStatusByte, newDataByte, dataByte];
+      }
+
+      function isControlChangeMessage(message) {
+        console.log("was cc")
+        if (message.length !== 3) {
+          return false; // Control Change messages are 3 bytes long
+        }
+
+        const statusByte = message[0];
+        return statusByte >= 0xB0 && statusByte <= 0xBF;
+      }
+
+      function isProgramChangeMessage(message) {
+        if (message.length !== 2) {
+          return false; // Program Change messages are 2 bytes long
+        }
+
+        const statusByte = message[0];
+        return statusByte >= 0xC0 && statusByte <= 0xCF;
+      }
+
+
+
     </script>
     <div id="menuportal"></div>
     <div id="fullScreenPortal"></div>

@@ -8,9 +8,10 @@ import {
   Text,
 } from "@nextui-org/react";
 import React, { useState, useEffect, useRef } from "react";
-import { midiMessageTypes, ModuleProps } from "./types";
-import { FilterModuleData, MidiData, useStore } from "./store";
-import { toTitleCase } from "./utils";
+import { midiMessageTypes, ModuleProps } from "../types";
+import { MidiData, useStore } from "../store";
+import { toTitleCase } from "../utils";
+import { FilterModuleData } from "./ModuleDefaults";
 
 const FilterModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
   const { setModuleData, setProcessor } = useStore();
@@ -49,7 +50,7 @@ const FilterModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
 
   //   console.log(moduleData.data);
   return (
-    <Container gap={1}>
+    <div>
       <Row gap={1}>
         <Card css={{ backgroundColor: "black" }}>
           <Grid.Container alignItems="center">
@@ -76,7 +77,7 @@ const FilterModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
           </Grid.Container>
         </Card>
       </Row>
-    </Container>
+    </div>
   );
 };
 

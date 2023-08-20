@@ -14,6 +14,10 @@ import useStore from "./store";
 import SetBpm from "./SetBpm";
 import { useEffectOnce } from "usehooks-ts";
 import useKeyboardShortcut from "use-keyboard-shortcut";
+import 'bootstrap/dist/css/bootstrap.css';
+import SideBar from "./SideBar";
+import "./styles.scss"
+import BottomToolbar from "./BottomToolbar";
 
 const Line = (): JSX.Element => {
   return (
@@ -38,7 +42,7 @@ const Line = (): JSX.Element => {
 function App() {
   //@ts-ignore
   // console.log(MIDI);
-  const { loadStore } = useStore();
+  const { loadStore, globals } = useStore();
   const onDrop = (files: File[]) => {
     console.log(files);
     console.log(
@@ -73,6 +77,19 @@ function App() {
     "l": 14,  
   }
 
+
+  const ensureGlobalVars = () =>{
+    //@ts-ignore
+    if (!window.midi){
+      //@ts-ignore
+      window.midi = {}
+      globals.map(g=>{
+        //@ts-ignore
+        window.midi[g.name] = g.value??g.defaultValue;
+        
+      })
+    }
+  }
   useEffectOnce(()=>{
     console.log("doing once")
     window.addEventListener("keydown", (e)=>{
@@ -83,6 +100,7 @@ function App() {
         console.log(keyVal)
         console.log(noteVal)
     })
+    ensureGlobalVars()
   })
 
   useKeyboardShortcut(
@@ -114,6 +132,8 @@ function App() {
   );
   
   useEffect(()=>{
+    //@ts-ignore
+    console.log(window.midi)
     console.log(octave); 
   },[octave]);
 
@@ -128,27 +148,14 @@ function App() {
 
 
   return (
-    <div {...getRootProps()} className="App">
+    <div className="d-flex">
+    <SideBar></SideBar>
+    <div {...getRootProps()} className="App w-100">
       {isDragActive && <DragPopup />}
       <Nav />
-      <Container
-        css={{
-          width: "100%",
-          paddingLeft: 0,
-          gap: "0px",
-          height: "100%",
-          // backgroundColor: "$background",
-        }}
-      >
-        <Container
-          sm
-          css={{
-            py: "$xl",
-            dflex: "center",
-            gap: "$lg",
-            flexFlow: "column  nowrap",
-            height: "100%",
-          }}
+      <div className="col-12 position-relative h-100">
+        <div
+        className="col-6 justify-content-center pt-5 m-auto position-relative h-100"
         >
           <ErrorBoundary
             FallbackComponent={ErrorFallback}
@@ -167,11 +174,11 @@ function App() {
                   <MidiSupply inputs={inputs} outputs={outputs}>
                     {(input, output) => {
                       return (
-                        <div>
+                        <>
                           <Line />
                           <Body midiInput={input} midiOutput={output} />
                           <Line />
-                        </div>
+                        </>
                       );
                     }}
                   </MidiSupply>
@@ -179,8 +186,11 @@ function App() {
               }}
             </MidiCheck>
           </ErrorBoundary>
-        </Container>
-      </Container>
+        </div>
+        <BottomToolbar/>
+      </div>
+    </div>
+
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Container, Text, Dropdown, Card, Spacer } from "@nextui-org/react";
 import { Connection, Input, Output } from "@react-midi/hooks";
-import useInterval from "./UseInterval";
-import { useStore, MidiData } from "./store";
-import { map } from "./utils";
+import useInterval from "../UseInterval";
+import { useStore, MidiData } from "../store";
+import { map } from "../utils";
 
 function hasNumber(myString: string) {
   return /\d/.test(myString);
@@ -104,15 +104,12 @@ export const MidiSelector = ({
 
   return (
     <Card
+      className = {"w-100"}
       css={{
-        width: "50%",
-        marginRight: midiType === "output" ? "50%" : "",
-        marginLeft: midiType === "input" ? "0" : "50%",
         justifyContent: "center",
         padding: 10,
         // backgroundColor: bgColor,
         backgroundColor: isProcessing ? "green" : "",
-        border: "1px solid white",
         boxShadow: "box-shadow: 0px 10px 57px -17px #17C964",
       }}
     >

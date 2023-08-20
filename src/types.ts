@@ -1,6 +1,6 @@
 import { MidiData, ModuleData } from "./store";
 
-export type EffectType = "Code" | "Logger" | "Filter";
+export type EffectType = "Code" | "Logger" | "Filter" | "Envelope";
 
 export const midiMessageTypes = [
   "NOTE ON",
