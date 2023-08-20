@@ -120,7 +120,7 @@ function Body({ midiInput, midiOutput }: BodyProps) {
         }
         globals.forEach((g) => {
           //@ts-ignore
-          // updateGlobal(g.id, window.midi[g.name]);
+          updateGlobal(g.id, window.midi[g.name]);
           //@ts-ignore
           // console.log("settings global ", g, window.midi[g.name]);
         });
@@ -169,10 +169,9 @@ function Body({ midiInput, midiOutput }: BodyProps) {
   return (
     <div
       className="col-12 align-items-center justify-center"
-      style={{ border: "1px solid red" }}
     >
       <AddNewProcessor />
-      <GlobalVars />
+
       <div
         className="rounded-10 card"
         id="processor-container"

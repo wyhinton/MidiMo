@@ -120,6 +120,7 @@ const GlobalVars = (): JSX.Element => {
               setExpanded(v);
             }
           }}
+          bordered={false}
           id={"global-vars-collapse"}
           css={{ borderRadius: "0px", textAlign: "center" }}
           title={"Global Variables"}
@@ -137,8 +138,10 @@ const GlobalVars = (): JSX.Element => {
                   return (
                     <Table.Row
                       css={{
+                        textAlign: "left",
                         border:
                           g.id === selectedGlobal?.id ? "1px solid white" : "",
+                          
                       }}
                     >
                       <Table.Cell>
@@ -165,7 +168,7 @@ const GlobalVars = (): JSX.Element => {
                         <div>{_.toString(g.value)}</div>
                       </Table.Cell>
                       <Table.Cell>
-                        <Input bordered initialValue={g.value.toString()} />
+                        <Input bordered initialValue={g.value?g.value.toString():""} />
                       </Table.Cell>
                       <Table.Cell>
                         <Button

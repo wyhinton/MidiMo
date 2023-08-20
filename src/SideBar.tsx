@@ -19,6 +19,7 @@ import {
     FaHeart,
     FaSave,
     FaCross,
+    FaTrash,
   } from 'react-icons/fa';
 import { useLocalStorage } from "usehooks-ts";
 
@@ -82,7 +83,7 @@ const SideBar = (): JSX.Element =>{
                   letterSpacing: '1px'
                 }}
               >
-                Pro Sidebar
+                Midima
               </div>
             </MenuItem>
           )}
@@ -91,16 +92,13 @@ const SideBar = (): JSX.Element =>{
       {/* Content */}
       <SidebarContent>
         <Menu iconShape="circle">
-          <MenuItem
+          {/* <MenuItem
             icon={<FaTachometerAlt />}
             suffix={<span className="badge red">NEW</span>}
           >
             Dashboard
-          </MenuItem>
+          </MenuItem> */}
           {/* <MenuItem icon={<FaGem />}>Components </MenuItem> */}
-          <MenuItem icon={<FaGem />}>
-            Components 
-          </MenuItem>
           <MenuItem 
                  onMouseDown={(e) => {
                     downloadFile(storeJSON);
@@ -108,10 +106,10 @@ const SideBar = (): JSX.Element =>{
           icon={<FaSave />}>
             Save 
           </MenuItem>
-          <MenuItem icon={<FaCross />}>
+          <MenuItem icon={<FaTrash />}>
             Clear 
           </MenuItem>
-          <MenuItem icon={<FaGem />}>
+          {/* <MenuItem icon={<FaGem />}>
             Components 
           </MenuItem>
           <SubMenu
@@ -122,8 +120,8 @@ const SideBar = (): JSX.Element =>{
             <MenuItem>Submenu 1</MenuItem>
             <MenuItem>Submenu 2</MenuItem>
             <MenuItem>Submenu 3</MenuItem>
-          </SubMenu>
-          <SubMenu
+          </SubMenu> */}
+          {/* <SubMenu
             // prefix={<span className="badge gray">3</span>}
             title={'With Prefix'}
             icon={<FaHeart />}
@@ -139,7 +137,7 @@ const SideBar = (): JSX.Element =>{
               <MenuItem>Submenu 3.1 </MenuItem>
               <MenuItem>Submenu 3.2 </MenuItem>
             </SubMenu>
-          </SubMenu>
+          </SubMenu> */}
         </Menu>
       </SidebarContent>
       {/* Footer */}

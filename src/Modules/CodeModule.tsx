@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
-import docco from "react-syntax-highlighter/dist/esm/styles/hljs/docco";
-import { useMap, MapOrEntries } from "usehooks-ts";
 import "../App.css";
 import AceEditor from "react-ace";
 import {
   Grid,
-  Text,
-  Badge,
   Container,
   Tooltip,
   Button,
@@ -20,16 +16,27 @@ import "ace-builds/src-noconflict/theme-tomorrow_night_bright.js";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/theme-tomorrow_night_bright";
 import "ace-builds/webpack-resolver";
+import d, {Ace} from 'ace-builds';
 import { ModuleProps } from "../types";
 import {
   FuncCarrier,
-  MidiData,
-  MidiProcessor,
   useStore,
 } from "../store";
 import useKeyboardShortcut from "use-keyboard-shortcut";
 import Portal from "../Portal";
 import { CodeModuleData } from "./ModuleDefaults";
+import ace from "brace";
+import snippet from "./codeSnippets";
+import ReactAce from "react-ace/lib/ace";
+import { addCompleter } from 'ace-builds/src-noconflict/ext-language_tools';
+//@ts-ignore
+ace.define("ace/snippets/json", ["require", "exports", "module"], (e, t, n) => {
+
+  //@ts-ignore
+    // eslint-disable-next-line
+  (t.snippetText = snippet), (t.scope = "json");
+});
+
 SyntaxHighlighter.registerLanguage("javascript", js);
 interface ExecFunc {
   func: Function;
@@ -132,18 +139,6 @@ const VarList = ({ onVarClick }: VarListProps): JSX.Element => {
   );
 };
 
-// interface Shortcut {
-//   shortcutKeys: string[];
-//   callback: callbackFn;
-//   options?: {
-//     overrideSystem?: boolean;
-//     ignoreInputFields?: boolean;
-//     repeatOnHold?: boolean;
-//   };
-// }
-
-// const UseKeyBoardShortcuts()
-
 function CodeModule({ moduleData, midiData, index }: ModuleProps) {
   const onChange = (value: string, event: any) => {
     setInputFunc(value);
@@ -175,15 +170,11 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
       ignoreInputFields: true,
     }
   );
-
   useKeyboardShortcut(["Escape"], (shortcutKeys) => setFullScreen(false), {
     // overrideSystem: true,
     ignoreInputFields: false,
   });
 
-  useEffect(() => {
-    console.log(fullScreen);
-  }, [fullScreen]);
 
   useEffect(() => {
     try {
@@ -210,11 +201,75 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
   }, [funcToExec, midiData]);
 
   useEffect(() => {
-    console.log(funcToExec);
+    // console.log(funcToExec);
     if (funcToExec) {
       setProcessor(moduleData.id, funcToExec as FuncCarrier);
     }
   }, [funcToExec]);
+
+  useEffect(()=>{
+    if (editorRef.current){
+      const langTools = d.require('ace/ext/language_tools');
+      console.log(langTools)
+      // data stub:
+      const sqlTables = [
+          { name: 'users', description: 'Users in the system' },
+          { name: 'userGroups', description: 'User groups to which users belong' },
+          { name: 'customers', description: 'Customer entries' },
+          { name: 'companies', description: 'Legal entities of customers' },
+          { name: 'loginLog', description: 'Log entries for user log-ins' },
+          { name: 'products', description: 'Products offered in the system' },
+          { name: 'productCategories', description: 'Different product categories' },
+      ];
+
+      const sqlTablesCompleter = {
+          getCompletions: (
+              editor: Ace.Editor,
+              session: Ace.EditSession,
+              pos: Ace.Point,
+              prefix: string,
+              callback: Ace.CompleterCallback
+          ): void => {
+              callback(
+                  null,
+                  sqlTables.map((table) => {
+                    console.log("here")
+                    return {
+                      caption: `${table.name}: ${table.description}`,
+                      value: table.name,
+                      meta: 'Table',
+                  } as Ace.Completion
+                })
+              );
+          },
+      };
+      langTools.addCompleter(sqlTablesCompleter);
+      // console.log(editorRef.current)
+      // console.log(editorRef.current.editor.getSession().getMode())
+      // let mode = editorRef.current.editor.getSession().getMode();
+      // //@ts-ignore
+      // const func = (state, session, pos, prefix)=>{
+      //   var completions: any[] = [];
+                            
+      //   ["example1", "example2"].forEach(function (w) {
+
+      //       completions.push({
+      //           value: w,
+      //           meta: "my completion",
+      //           snippet: `@{${w || ""}}`,
+      //           caption: w || ""
+
+      //       });
+      //   });
+      //   console.log("HERE")
+      //   return completions;
+
+      // }
+      // mode.getCompletions = func;
+      // editorRef.current.editor.getSession().setMode(mode)
+      // console.log(editorRef)
+    }
+  },[])
 
   const sharedProps = {
     placeholder: "Placeholder Text",
@@ -238,7 +293,7 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
     },
   };
 
-  const editorRef = useRef(null);
+  const editorRef = useRef<ReactAce>(null);
 
   return (
     <Grid.Container gap={2} justify="center">
@@ -298,8 +353,37 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
                   console.log(val);
                   // }
                 }}
+                onLoad={(editor)=>{
+                  console.log("HELLO")
+                  var mode = editor.getSession().getMode();
+                  // mode.getCompletions = ()
+                  //@ts-ignore
+                  mode.getCompletions = (state, session, pos, prefix, callback) => {
+                    console.log(state)
+                      var completions: any[] = [];
+                      ["example1", "example2"].forEach(function (w) {
+                          completions.push({
+                              value: w,
+                              meta: "my completion",
+                              snippet: `@{${w || ""}}`,
+                              caption: w || ""
+                          });
+                      });
+                      return completions;
+                    
+                  }
+
+                  editor.getSession().setMode(mode);
+
+                  console.log("EDITOR");
+                  //@ts-ignore
+                  console.log(editor.getSession().getMode().getCompletions());
+
+
+                }}
                 fontSize={fontSize}
                 showPrintMargin={true}
+                ref={editorRef}
                 // showPrintMargin={true}
                 // showGutter={false}
                 showGutter={true}
@@ -308,9 +392,8 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
                 height={"100%"}
                 width={"100%"}
                 setOptions={{
-                  enableBasicAutocompletion: false,
-                  enableLiveAutocompletion: false,
-                  enableSnippets: false,
+                  enableBasicAutocompletion: true,
+                  enableSnippets: true,
                   showLineNumbers: true,
                   tabSize: 2,
                 }}
