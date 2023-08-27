@@ -24,6 +24,12 @@
     hsl(0deg 0% 0%) 100%
   ); */
 }
+
+div[data-rbd-droppable-id="droppable"] div{
+  /* background-color: red; */
+  margin-bottom: 4px
+}
+
 .logger-scroll {
   max-height: 400px;
 }

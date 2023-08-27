@@ -20,9 +20,10 @@ import {
     FaSave,
     FaCross,
     FaTrash,
+    FaPlus,
   } from 'react-icons/fa';
 import { useLocalStorage } from "usehooks-ts";
-
+import AddNewProcessor from "./Menues/AddNewProcessor";
   const downloadFile = (myData: any) => {
     const fileName = "my-file";
     const json = JSON.stringify(myData, null, 2);
@@ -99,6 +100,13 @@ const SideBar = (): JSX.Element =>{
             Dashboard
           </MenuItem> */}
           {/* <MenuItem icon={<FaGem />}>Components </MenuItem> */}
+          <MenuItem 
+            onMouseDown={(e) => {
+              downloadFile(storeJSON);
+            }}
+          icon={<FaPlus />}>
+            <AddNewProcessor></AddNewProcessor>
+          </MenuItem>
           <MenuItem 
                  onMouseDown={(e) => {
                     downloadFile(storeJSON);

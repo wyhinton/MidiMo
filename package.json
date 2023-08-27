@@ -6,7 +6,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.3.0",
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@nextui-org/react": "^1.0.0-beta.12",
+    "@nextui-org/react": "1.0.0-beta.12",
     "@react-midi/hooks": "^1.0.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

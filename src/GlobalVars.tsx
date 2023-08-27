@@ -15,6 +15,7 @@ import { TableBody } from "@nextui-org/react/types/table/base";
 import Portal from "./Portal";
 import { Item, ItemParams, Menu, useContextMenu } from "react-contexify";
 import { useOnClickOutside } from "usehooks-ts";
+import { brightColor } from "./theme";
 
 const updateGlobalVar = (v: GlobalVar) => {
   let w = window as any;
@@ -90,7 +91,7 @@ const GlobalVars = (): JSX.Element => {
   //   }
   // }, []);
   return (
-    <Card>
+    <div style={{backgroundColor: brightColor}}>
       {/* <Portal visible={contextMenuVisible} divId="#menuportal">
         <Card ref={ref} css={{ pointerEvents: "all", height: "100%" }}>
           <Menu id={MENU_ID}>
@@ -206,7 +207,7 @@ const GlobalVars = (): JSX.Element => {
           </Grid>
         </Collapse>
       </Container>
-    </Card>
+    </div>
   );
 };
 

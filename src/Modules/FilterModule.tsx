@@ -50,33 +50,36 @@ const FilterModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
 
   //   console.log(moduleData.data);
   return (
-    <div>
-      <Row gap={1}>
-        <Card css={{ backgroundColor: "black" }}>
-          <Grid.Container alignItems="center">
-            {moduleData.expanded &&
-              midiMessageTypes.map((m) => {
-                return (
-                  <Grid xs={6}>
-                    <Checkbox
-                      disableAnimation
-                      value={m}
-                      isSelected={moduleData.data[m]}
-                      onChange={(checked) => {
-                        // console.log(m, checked);
-                        let toChange = { ...filterModuleData };
-                        toChange[m] = checked;
-                        setfilterModuleData(toChange);
-                      }}
-                    ></Checkbox>
-                    <Spacer x={0.5}></Spacer>
-                    <Text css={{ marginBottom: 0 }}>{toTitleCase(m)}</Text>
-                  </Grid>
-                );
-              })}
-          </Grid.Container>
-        </Card>
-      </Row>
+    <div className="d-flex flex-column p-3">
+      <div>Checked items will be filtered</div>
+      <div className="p-3 col-xl-7 m-auto d-flex justify-content-center">
+        <Row gap={1}>
+          <Card css={{ backgroundColor: "black" }}>
+            <Grid.Container alignItems="center">
+              {moduleData.expanded &&
+                midiMessageTypes.map((m, i) => {
+                  return (
+                    <Grid xs={2} key={i}>
+                      <Checkbox
+                        disableAnimation
+                        value={m}
+                        isSelected={moduleData.data[m]}
+                        onChange={(checked) => {
+                          // console.log(m, checked);
+                          let toChange = { ...filterModuleData };
+                          toChange[m] = checked;
+                          setfilterModuleData(toChange);
+                        }}
+                      ></Checkbox>
+                      <Spacer x={0.5}></Spacer>
+                      <Text css={{ marginBottom: 0 }}>{toTitleCase(m)}</Text>
+                    </Grid>
+                  );
+                })}
+            </Grid.Container>
+          </Card>
+        </Row>
+      </div>
     </div>
   );
 };

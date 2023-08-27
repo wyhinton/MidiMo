@@ -1,6 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
+import { map } from "./utils";
 
+
+export interface GraphPositions{
+  xa: number;
+  xd: number;
+  xr: number;
+  ys: number;
+}
+
+export interface PosUpdate {
+  pos: {x: number, y: number};
+  value: number;
+}
 
 interface EnvelopeGraphProps {
   defaultXa: number;
@@ -19,12 +32,7 @@ interface EnvelopeGraphProps {
     height: number;
     width: number;
   };
-  onChange?: (values: {
-    xa: number;
-    xd: number;
-    xr: number;
-    ys: number;
-  }) => void;
+  onChange?: (values: GraphPositions) => void;
   style?: React.CSSProperties;
   styles: {
     line: React.CSSProperties;
@@ -37,6 +45,8 @@ interface EnvelopeGraphProps {
     };
   };
   corners?: boolean;
+  time: number; 
+  onPositionChange: (update: PosUpdate)=>void; 
 }
 
 
@@ -56,6 +66,7 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
       xr: number;
     };
   }>({ xa: 0, xd: 0, xr: 0, ya: props.ya, ys: props.ys, drag: null, svgRatio: { width: 0, height: 0 }, ratio: { xa: 0, xd: 0, xr: 0 } });
+
 
   const {
     defaultXa,
@@ -83,7 +94,9 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
     return styles;
   };
   const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 });
+  
   const boxRef = React.createRef<SVGSVGElement>();
+  const pathRef = useRef<SVGPathElement>(null);
   useEffect(() => {
 
 
@@ -139,7 +152,12 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
     //   window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
-
+  const viewHeight = 20;
+  useEffect(()=>{
+    console.log(props.time);
+    setCurrentPosition(dbgY(props.time))
+    props.onPositionChange({pos: currentPosition, value: 1-(currentPosition.y/viewHeight)})
+  },[props.time]);
   const defaultMargin = 5;
   const viewBox = {
     width: 100,
@@ -170,6 +188,43 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
     //       styles.dndBox.strokeWidth) || 0,
   };
 
+  const getEnvelopeValueAtX = (xPos: number) => {
+    const { xa, xd, xr, ya, ys } = state;
+    const [attackWidth, decayWidth, sustainWidth, releaseWidth] = getPhaseLengths();
+    if (xPos <= xa) {
+      // Calculate value during attack phase
+      const t = xPos / xa;
+      return ya * t;
+    } else if (xPos <= xa + xd) {
+      // Calculate value during decay phase
+      const t = (xPos - xa) / decayWidth;
+      return ya - (ya - ys) * t;
+    } else if (xPos <= xa + xd + sustainWidth) {
+      // Calculate value during sustain phase
+      return ys;
+    } else if (xPos <= xa + xd + sustainWidth + xr) {
+      // Calculate value during release phase
+      const t = (xPos - xa - xd - sustainWidth) / releaseWidth;
+      return ys * (1 - t);
+    } else {
+      return 0; // Beyond the release phase
+    }
+  };
+
+  const dbgY = (xPos: number) =>{
+    let y = 1.-getEnvelopeValueAtX(xPos);
+    y *= 20.;
+    const path = pathRef.current;
+    console.log(path)
+    if (path){
+      const t = path.getPointAtLength(xPos*100)
+      return t;
+      console.log(t)
+ 
+    }
+    // console.log(y)
+    return {x: 0, y:0};
+  }
   const getPhaseLengths = () => {
     const { xa, xd, xr } = state;
     const absoluteS = viewBox.width - xa - xd - 0.25 * viewBox.width;
@@ -270,7 +325,7 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
 
   const handleMouseMove = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     event.stopPropagation();
-    console.log(event)
+    // console.log(event)
     const [
       attackWidth,
       decayWidth,
@@ -408,15 +463,25 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
     >
+      <rect x={0} y={0} width={w} height={h} stroke={"red"} strokeWidth={.1}>
+
+      </rect>
+      <rect x={0} y={h-viewBox.marginBottom} width={w} height={.1} fill={"blue"} strokeWidth={1}>
+
+      </rect>
+      <rect x={0} y={viewBox.marginTop} width={w} height={.1} fill={"blue"} strokeWidth={1}>
+
+      </rect>
       <path
         transform={`translate(${marginLeft}, ${marginTop})`}
         d={generatePath()}
         style={{ ...styles.line }}
         vectorEffect="non-scaling-stroke"
+        ref={pathRef}
       />
         <circle
-        cx={marginLeft + currentPosition.x}
-        cy={marginTop + currentPosition.y}
+        cy={currentPosition.y+viewBox.marginTop}
+        cx={currentPosition.x+viewBox.marginLeft}
         r="1" // Adjust the radius of the circle as per your requirement
         fill="red" // You can change the color of the circle here
     />

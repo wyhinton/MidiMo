@@ -1,19 +1,11 @@
 import {
-  Card,
-  Checkbox,
-  Container,
-  Grid,
-  Row,
-  Spacer,
-  Text,
+  Container, Input,
 } from "@nextui-org/react";
-import React, { useState, useEffect, useRef } from "react";
-import { midiMessageTypes, ModuleProps } from "../types";
-import { MidiData, useStore } from "../store";
-import { toTitleCase } from "../utils";
+import { useState, useEffect } from "react";
+import { ModuleProps } from "../types";
+import { useStore } from "../store";
 import { FilterModuleData } from "./ModuleDefaults";
-import Sketch from "react-p5";
-import EnvelopeGraph from "../Graph";
+import EnvelopeGraph, { GraphPositions, PosUpdate } from "../Graph";
 
 let styles = {
     line: {
@@ -39,12 +31,13 @@ let styles = {
       stroke: "white"
     }
   };
-const ENVELOPE_DURATION = 1
+const ENVELOPE_DURATION = 15000
 const EnvelopeModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
   const { setModuleData, setProcessor } = useStore();
   const [filterModuleData, setfilterModuleData] = useState<FilterModuleData>(
     moduleData.data as FilterModuleData
   );
+  const [currentValue, setCurrentValue] = useState(0)
   const [envelopePosition, setEnvelopePosition] = useState(0);
   const triggerEnvelope = () => {
     let startTime: number;
@@ -52,7 +45,8 @@ const EnvelopeModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = (timestamp - startTime) / ENVELOPE_DURATION; // ENVELOPE_DURATION is the total duration for the envelope
-  
+      // console.log(progress)
+      // console.log(progress)
       if (progress < 1) {
         // Update the envelope position
         setEnvelopePosition(progress);
@@ -64,15 +58,26 @@ const EnvelopeModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
         setEnvelopePosition(0); // Reset the envelope position
       }
     };
-  
+
     requestAnimationFrame(animate);
   };
 
+  // useEffect(()=>{
+  //   console.log(midiData);
+  //   triggerEnvelope()
+  // },[midiData]);
+
+
   
+  const onPositionChange = (values: PosUpdate) =>{
+    setCurrentValue(values.value)
+  }
+
+
   useEffect(() => {
     setModuleData(moduleData.id, filterModuleData);
     setProcessor(moduleData.id, { func: (data)=>{
-        console.log("hello from filter")
+        // console.log("hello from filter")
         return data} });
   }, [filterModuleData]);
 
@@ -81,9 +86,16 @@ const EnvelopeModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
     <Container gap={1}>
         <div>hello</div>
         <button onClick={triggerEnvelope}>Trigger Envelope</button>
+        <div>{currentValue}</div>
+        <div className="d-flex">
+          <Input type={"number"} min={0} max={127}></Input>
+          <Input className = {"ps-2"} type={"number"} min={0} max={127}></Input>
+        </div>
         <EnvelopeGraph 
-     ya={1 - envelopePosition * 0.5}
-     ys={envelopePosition * 0.5}
+        time={envelopePosition}
+        onPositionChange={onPositionChange}
+        ya={1 - envelopePosition * 0.5}
+        ys={envelopePosition * 0.5}
         defaultXa={1} defaultYa={1} defaultYs={1} defaultXd={1} defaultXr={1} styles= {styles}/>
     </Container>
   );

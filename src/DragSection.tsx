@@ -113,7 +113,7 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
         </Card>
       </Portal>
 
-      <Collapse.Group css={{ padding: "$xs", width: "100%"}}>
+      <Collapse.Group css={{ padding: "$xs", width: "100%", maxHeight: "83vh"}}>
         <Droppable droppableId="droppable">
           {(provided, snapshot): JSX.Element => (
             <div
@@ -160,7 +160,7 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
                         >
                           <Card
                             css={{
-                              backgroundColor: "black",
+                              backgroundColor: "#0d0d0d",
                               // marginTop: 10,
                               border:
                                 selectedModule?.id === module.id

@@ -6,7 +6,6 @@ import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import DragSection from "./DragSection";
 import MidiSupply from "./MidiSupply";
 import MidiCheck from "./MidiCheck";
-import Nav from "./Nav";
 import ErrorFallback from "./ErrorFallback";
 import { useDropzone } from "react-dropzone";
 import DragPopup from "./DragPopup";
@@ -152,10 +151,9 @@ function App() {
     <SideBar></SideBar>
     <div {...getRootProps()} className="App w-100">
       {isDragActive && <DragPopup />}
-      <Nav />
       <div className="col-12 position-relative h-100">
         <div
-        className="col-6 justify-content-center pt-5 m-auto position-relative h-100"
+        className="justify-content-center m-auto position-relative h-100"
         >
           <ErrorBoundary
             FallbackComponent={ErrorFallback}
@@ -175,9 +173,7 @@ function App() {
                     {(input, output) => {
                       return (
                         <>
-                          <Line />
                           <Body midiInput={input} midiOutput={output} />
-                          <Line />
                         </>
                       );
                     }}

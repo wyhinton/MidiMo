@@ -13,15 +13,16 @@ const AddNewProcessor = (): JSX.Element => {
         // animated={false}
         css={{
           width: "100%",
-          backgroundColor: brightColor,
+          backgroundColor: "transparent",
+          color: "white",
+          textAlign: "left",
           borderRadius: "5px 5px 0px 0px",
-          color: "$accents0",
         }}
         id="add-processor-button"
-        icon={<i className="fa fa-plus" aria-hidden="true"></i>}
+        // icon={<i className="fa fa-plus" aria-hidden="true"></i>}
         flat
       >
-        Add New MIDI Processor
+        Add
       </Dropdown.Button>
       <Dropdown.Menu
         selectionMode="single"

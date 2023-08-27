@@ -89,6 +89,7 @@ function Body({ midiInput, midiOutput }: BodyProps) {
           blocked: false,
           eventTime: new Date(msg.timeStamp),
         } as MidiData;
+        console.log(smidi)
         setCurrentMidiMessage(smidi as MidiData);
         const results = createFuncChain(smidi as MidiData, modules);
         setTChain(results);
@@ -170,14 +171,11 @@ function Body({ midiInput, midiOutput }: BodyProps) {
     <div
       className="col-12 align-items-center justify-center"
     >
-      <AddNewProcessor />
-
       <div
         className="rounded-10 card"
         id="processor-container"
         style={{
           backgroundColor: brightColor,
-          maxHeight: "50vh",
           overflowY: "auto",
         }}
       >

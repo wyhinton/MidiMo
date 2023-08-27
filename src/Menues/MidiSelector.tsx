@@ -104,7 +104,7 @@ export const MidiSelector = ({
 
   return (
     <Card
-      className = {"w-100"}
+      className = {"w-100 rounded-0"}
       css={{
         justifyContent: "center",
         padding: 10,
