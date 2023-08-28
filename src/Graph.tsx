@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { map } from "./utils";
+import { brightColor } from "./theme";
 
 
 export interface GraphPositions{
@@ -475,7 +476,7 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
       <path
         transform={`translate(${marginLeft}, ${marginTop})`}
         d={generatePath()}
-        style={{ ...styles.line }}
+        style={{ ...styles.line, color: brightColor }}
         vectorEffect="non-scaling-stroke"
         ref={pathRef}
       />

@@ -41,11 +41,6 @@ const FilterModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
     };
     setProcessor(moduleData.id, { func: filterFunc });
 
-    // const checkBoxStatuses = Object.entries(filterModuleData);
-    // for (let i = 0; i < checkBoxStatuses.length; i++) {
-    //   const element = checkBoxStatuses[i];
-    //   console.log(element);
-    // }
   }, [filterModuleData]);
 
   //   console.log(moduleData.data);

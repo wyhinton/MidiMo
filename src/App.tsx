@@ -1,42 +1,20 @@
 /* global midi */
-import { Container } from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Body from "./Body";
-import { ErrorBoundary, FallbackProps } from "react-error-boundary";
-import DragSection from "./DragSection";
+import { ErrorBoundary } from "react-error-boundary";
 import MidiSupply from "./MidiSupply";
 import MidiCheck from "./MidiCheck";
 import ErrorFallback from "./ErrorFallback";
 import { useDropzone } from "react-dropzone";
 import DragPopup from "./DragPopup";
 import useStore from "./store";
-import SetBpm from "./SetBpm";
 import { useEffectOnce } from "usehooks-ts";
 import useKeyboardShortcut from "use-keyboard-shortcut";
-import 'bootstrap/dist/css/bootstrap.css';
-import SideBar from "./SideBar";
 import "./styles.scss"
-import BottomToolbar from "./BottomToolbar";
 
-const Line = (): JSX.Element => {
-  return (
-    <Container>
-      <div
-        style={{
-          width: "100%",
-          // border: "1px solid red",
-          height: 50,
-          justifyContent: "center",
-          display: "flex",
-        }}
-      >
-        <div
-          style={{ width: 2, backgroundColor: "white", height: "100%" }}
-        ></div>
-      </div>
-    </Container>
-  );
-};
+import BottomToolbar from "./BottomToolbar";
+import GlobalVars from "./GlobalVars";
+
 
 function App() {
   //@ts-ignore
@@ -147,11 +125,12 @@ function App() {
 
 
   return (
-    <div className="d-flex">
-    <SideBar></SideBar>
-    <div {...getRootProps()} className="App w-100">
+    <div {...getRootProps()} className="App w-100 d-flex">
       {isDragActive && <DragPopup />}
-      <div className="col-12 position-relative h-100">
+      <div className = "col-3 h-100">
+        <GlobalVars/>
+      </div>
+      <div className="col-9 position-relative h-100">
         <div
         className="justify-content-center m-auto position-relative h-100"
         >
@@ -161,11 +140,6 @@ function App() {
               // reset the state of your app so the error doesn't happen again
             }}
           >
-            {/* <SetBpm
-              onBpmChange={(bpm) => {
-                console.log(bpm);
-              }}
-            /> */}
             <MidiCheck>
               {(inputs, outputs) => {
                 return (
@@ -185,8 +159,6 @@ function App() {
         </div>
         <BottomToolbar/>
       </div>
-    </div>
-
     </div>
   );
 }

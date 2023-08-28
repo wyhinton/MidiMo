@@ -135,3 +135,33 @@ body {
     background: #ffd331;
   }
 }
+
+
+*{
+  color: white;
+}
+
+.text-monospace{
+  font-family: monospace;
+}
+
+.text-blue{
+  color: rgb(13 110 253);
+}
+
+
+
+:root {
+  --secondary-color: #your-color-code;
+  --bs-secondary: rgb(13 110 253);
+  --bs-primary: #16181a;
+  --bs-dark: black;
+}
+
+@import 'variables.scss';
+
+@import 'bootstrap/dist/css/bootstrap.css';
+
+.bg-black{
+  background-color: black !important;
+}

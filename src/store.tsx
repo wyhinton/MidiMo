@@ -67,6 +67,7 @@ interface TodoState {
   addGlobal: (global: GlobalVar) => void;
   clearGlobals: () => void;
   updateGlobal: (id: number, value: any) => void;
+  updateAllGlobals: () =>void;
   deleteGlobal: (id: number) => void;
   deleteModule: (id: string) => void;
   loadStore: (settings: StoreLoad) => void;
@@ -189,6 +190,15 @@ export const useStore = create<TodoState>()(
           set((state) => ({
             globals: state.globals.map((g) =>
               g.id === id ? { ...g, value: value } : g
+            ),
+          }));
+        },
+        updateAllGlobals: () => {
+          set((state) => ({
+            globals: state.globals.map((g) =>{
+              //@ts-ignore
+                return {...g, value: window.midi[g.name] as number}
+              }
             ),
           }));
         },

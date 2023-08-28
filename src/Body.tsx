@@ -1,21 +1,15 @@
 import { useEffect, useState } from "react";
 
 import "./App.css";
-import { Card, Container } from "@nextui-org/react";
 import "bootstrap/dist/css/bootstrap.css";
-import useKeyboardShortcut from "use-keyboard-shortcut";
-import { Input, MIDIMessage, Output, useMIDIMessage } from "@react-midi/hooks";
+import { Input, Output } from "@react-midi/hooks";
 import DragSection from "./DragSection";
 import { FuncCarrier, MidiData, ModuleData, useStore } from "./store";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { getMessageType } from "./utils";
 import "font-awesome/css/font-awesome.min.css";
-import GlobalVars from "./GlobalVars";
-import AddNewProcessor from "./Menues/AddNewProcessor";
 import { brightColor } from "./theme";
-import { Item, Menu } from "react-contexify";
 import { cloneDeep } from "lodash";
-import { useEffectOnce } from "usehooks-ts";
 
 interface BodyProps {
   midiInput: Input;
@@ -69,16 +63,16 @@ function Body({ midiInput, midiOutput }: BodyProps) {
     setMidiChainData,
     setStartMessage,
     setShowProcessingIndicator,
-    outputDevice,
     setShowOutputIndicator,
-    globals,
-    updateGlobal,
+    updateAllGlobals,
+    // globals,
   } = useStore();
 
   useEffect(() => {
     //@ts-ignore
     if (midiInput) {
       midiInput.onmidimessage = (msg: any) => {
+
         const newMidiMessage = {
           data: msg.data,
           deviceName: msg.srcElement.name,
@@ -100,7 +94,7 @@ function Body({ midiInput, midiOutput }: BodyProps) {
                 // console.log(finalOutput);
                 midiOutput?.send(finalOutput.data);
                 setShowOutputIndicatorLocal(true);
-  
+                setFinalOutput(finalOutput)
                 const hideOutputIndicatorTimer = setTimeout(() => {
                   // console.log("running output desc");
                   if (showOutputIndicatorLocal) {
@@ -116,18 +110,20 @@ function Body({ midiInput, midiOutput }: BodyProps) {
               );
             }
           }
-          // globals.forEach((g) => {
-          //   //@ts-ignore
-          //   updateGlobal(g.id, window.midi[g.name]);
-          //   //@ts-ignore
-          //   // console.log("settings global ", g, window.midi[g.name]);
-          // });
-          // setFinalOutput(finalOutput);
         }
-
+        // updateAllGlobals()
+        // const z = ()=>{updateAllGlobals()}
+        // z()
       };
+
     }
   }, [midiInput, finalOutput]);
+
+  useEffect(()=>{
+    console.log("here")
+    updateAllGlobals()
+    // console.log(finalOutput);
+  },[finalOutput]);
   // }, [midiInput, modules, outputDevice, setStartMessage]);
 
   useEffect(() => {
@@ -160,16 +156,15 @@ function Body({ midiInput, midiOutput }: BodyProps) {
   }, [showOutputIndicatorLocal]);
 
   const onDragEnd = (result: DropResult): void => {
-    console.log(result);
     if (!result.destination) {
       return;
     }
-    console.log(result);
     reorder(result.source.index, result.destination.index);
   };
   return (
     <div
-      className="col-12 align-items-center justify-center"
+      id="effects"
+      className="col-12 align-items-center justify-center overflow-auto"
     >
       <div
         className="rounded-10 card"

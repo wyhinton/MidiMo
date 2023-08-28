@@ -1,22 +1,11 @@
-import {
-  Button,
-  Card,
-  Collapse,
-  Container,
-  Grid,
-  Input,
-  Table,
-  Text,
-} from "@nextui-org/react";
-import React, { useState, useEffect, useRef } from "react";
-import useStore, { GlobalVar, ModuleData } from "./store";
+import { Button, Grid } from "@nextui-org/react";
+import { useState, useRef } from "react";
+import useStore, { GlobalVar } from "./store";
 import _ from "lodash";
-import { TableBody } from "@nextui-org/react/types/table/base";
-import Portal from "./Portal";
-import { Item, ItemParams, Menu, useContextMenu } from "react-contexify";
-import { useOnClickOutside } from "usehooks-ts";
+import { ItemParams, useContextMenu } from "react-contexify";
 import { brightColor } from "./theme";
-
+import GlobalVarItem from "./GlobalVarItem";
+import { FcGlobe } from "react-icons/fc";
 const updateGlobalVar = (v: GlobalVar) => {
   let w = window as any;
   if (!w.midi) {
@@ -91,122 +80,41 @@ const GlobalVars = (): JSX.Element => {
   //   }
   // }, []);
   return (
-    <div style={{backgroundColor: brightColor}}>
-      {/* <Portal visible={contextMenuVisible} divId="#menuportal">
-        <Card ref={ref} css={{ pointerEvents: "all", height: "100%" }}>
-          <Menu id={MENU_ID}>
-            <div
-              className="menu-item-container"
-              onClick={(e) => {
-                console.log(e);
-              }}
-            >
-              <Item id="delete-global" onClick={handleItemClick}>
-                <Text color="error">Delete Global</Text>
-              </Item>
-            </div>
-            <div className="menu-item-container">
-              <Item id="Map Block" onClick={handleItemClick}>
-                <Text>item 2</Text>
-              </Item>
-            </div>
-          </Menu>
-        </Card>
-      </Portal> */}
-      <Container css={{ width: "100%" }}>
-        <Collapse
-          onChange={(e, i, v) => {
-            console.log(v);
-            if (v) {
-              setExpanded(v);
-            }
-          }}
-          bordered={false}
-          id={"global-vars-collapse"}
-          css={{ borderRadius: "0px", textAlign: "center" }}
-          title={"Global Variables"}
-        >
-          {expanded && (
-            <Table width={"100%"} css={{ padding: "0" }}>
-              <Table.Header>
-                <Table.Column>Name</Table.Column>
-                <Table.Column>Value</Table.Column>
-                <Table.Column>Default Value</Table.Column>
-                <Table.Column>Delete</Table.Column>
-              </Table.Header>
-              <Table.Body>
-                {globals.map((g, i) => {
-                  return (
-                    <Table.Row
-                      css={{
-                        textAlign: "left",
-                        border:
-                          g.id === selectedGlobal?.id ? "1px solid white" : "",
-                          
-                      }}
-                    >
-                      <Table.Cell>
-                        <div onContextMenu={(e) => handleContextMenu(e, g)}>
-                          <span
-                            style={{
-                              fontFamily: "monospace",
-                              color: "#0072F5",
-                            }}
-                          >
-                            window.midi.
-                          </span>
-                          <Input
-                            // onChange={(e) => {
-                            //   console.log(e);
-                            //   console.log(e.target.value);
-                            // }}
-                            underlined
-                            initialValue={g.name}
-                          />
-                        </div>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <div>{_.toString(g.value)}</div>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Input bordered initialValue={g.value?g.value.toString():""} />
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Button
-                          onClick={(e) => {
-                            deleteGlobal(g.id);
-                            //@ts-ignore
-                            delete window.midi[g.name];
-                          }}
-                          bordered
-                          auto
-                          icon={<i className={"fa fa-trash"}></i>}
-                        />
-                      </Table.Cell>
-                    </Table.Row>
-                  );
-                })}
-              </Table.Body>
-            </Table>
-          )}
-
-          <Grid xs={12} justify="space-around">
-            <Button
-              onClick={(e) => {
-                addGlobal({
-                  name: `global${globals.length}`,
-                  value: `global${globals.length}`,
-                  defaultValue: `global${globals.length}`,
-                  id: globals.length,
-                });
-                // console.log(e);
-              }}
-            >
-              Add New Variable
-            </Button>
-          </Grid>
-        </Collapse>
-      </Container>
+    <div>
+      <div
+        className="h5 d-flex align-items-center"
+        style={{ backgroundColor: brightColor, padding: 10, height: 60 }}
+      >
+        Globals
+        <FcGlobe />
+      </div>
+      <div style={{maxHeight: "calc(100vh - 60px)"}}>
+        {globals.map((g, i) => {
+          return (
+            <GlobalVarItem
+              globalVar={g}
+              selected={selectedGlobal?.id === g.id}
+              onContextMenu={handleContextMenu}
+            />
+          );
+        })}
+        <Grid xs={12} justify="space-around">
+          <Button
+            onClick={(e) => {
+              addGlobal({
+                name: `global${globals.length}`,
+                value: `global${globals.length}`,
+                defaultValue: `global${globals.length}`,
+                id: globals.length,
+              });
+              // console.log(e);
+            }}
+            className="w-100 rounded-0"
+          >
+            Add New Variable
+          </Button>
+        </Grid>
+      </div>
     </div>
   );
 };

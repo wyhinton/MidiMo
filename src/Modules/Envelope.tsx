@@ -6,11 +6,12 @@ import { ModuleProps } from "../types";
 import { useStore } from "../store";
 import { FilterModuleData } from "./ModuleDefaults";
 import EnvelopeGraph, { GraphPositions, PosUpdate } from "../Graph";
+import { brightColor } from "../theme";
 
 let styles = {
     line: {
       fill: "none",
-      stroke: "rgb(221, 226, 232)",
+      stroke: brightColor,
       strokeWidth: "2"
     },
     dndBox: {
@@ -33,7 +34,7 @@ let styles = {
   };
 const ENVELOPE_DURATION = 15000
 const EnvelopeModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
-  const { setModuleData, setProcessor } = useStore();
+  const { setModuleData, setProcessor, outputDevice } = useStore();
   const [filterModuleData, setfilterModuleData] = useState<FilterModuleData>(
     moduleData.data as FilterModuleData
   );
@@ -50,6 +51,7 @@ const EnvelopeModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
       if (progress < 1) {
         // Update the envelope position
         setEnvelopePosition(progress);
+        
   
         // Continue animation
         requestAnimationFrame(animate);

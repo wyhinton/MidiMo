@@ -87,11 +87,18 @@ function Logger({ moduleData, index }: ModuleProps) {
                 Device
               </Table.Column>
               <Table.Column css={{ backgroundColor: "black", fontSize:"$md"  }}>
+                Channel
+              </Table.Column>
+              <Table.Column css={{ backgroundColor: "black", fontSize:"$md"  }}>
                 Event
               </Table.Column>
             </Table.Header>
             <Table.Body>
               {logs.map((log: MidiData, index: number) => {
+                const regex = /(CHAN \d+)\s(.+)/;
+                const parts = log.eventType.match(regex) ?? [];
+                const chan = parts[1] ?? "";
+                const msgType = parts[0] ?? ""
                 return (
                   <Table.Row
                     css={{
@@ -108,7 +115,10 @@ function Logger({ moduleData, index }: ModuleProps) {
                       {log.deviceName}
                     </Table.Cell>
                     <Table.Cell>
-                      {log.eventType}
+                      {chan}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {msgType}
                     </Table.Cell>
                   </Table.Row>
                 );

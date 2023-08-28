@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Container, createTheme, NextUIProvider } from "@nextui-org/react";
+import SideBar from "./SideBar";
 // import "./fonts/RODIN.otf";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -27,7 +28,10 @@ const theme = createTheme({
 
 root.render(
   <NextUIProvider theme={theme}>
-    <App />
+      <div className="d-flex">
+        <SideBar></SideBar>
+        <App />
+      </div>
   </NextUIProvider>
 );
 
