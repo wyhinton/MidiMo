@@ -6,7 +6,7 @@ import { MessageType, ModuleProps } from "./types";
 import { useStore } from "./store";
 import useMidiChain from "./UseMidiChain";
 
-const maxLogLength = 50;
+const maxLogLength = 25;
 
 function Logger({ moduleData, index }: ModuleProps) {
   const [logs, setLogs] = useState<MidiData[]>([]);
@@ -16,15 +16,25 @@ function Logger({ moduleData, index }: ModuleProps) {
     // console.log("UPDATING LOGER");
     // console.log(moduleInputMidi);
     if (moduleInputMidi && !moduleInputMidi.blocked) {
+      setLogs(prevLogs => {
+        let newLogArr = [...prevLogs, moduleInputMidi];
+        if (newLogArr.length > maxLogLength) {
+          newLogArr = newLogArr.slice(
+            newLogArr.length - maxLogLength,
+            newLogArr.length
+          );
+        }
+        return newLogArr;
+      });
       // console.log(moduleInputMidi);
-      let newLogArr = [...logs, moduleInputMidi];
-      if (newLogArr.length > maxLogLength) {
-        newLogArr = newLogArr.slice(
-          newLogArr.length - maxLogLength,
-          newLogArr.length
-        );
-      }
-      setLogs(newLogArr);
+      // let newLogArr = [...logs, moduleInputMidi];
+      // if (newLogArr.length > maxLogLength) {
+      //   newLogArr = newLogArr.slice(
+      //     newLogArr.length - maxLogLength,
+      //     newLogArr.length
+      //   );
+      // }
+      // setLogs(newLogArr);
     }
   }, [JSON.stringify(moduleInputMidi)]);
 
@@ -47,12 +57,16 @@ function Logger({ moduleData, index }: ModuleProps) {
       >
         Clear
       </Button>
+        {/* {logs.map((l, i)=>{
+          return <div key={i}>{l.deviceName}</div>
+        })} */}
       <ScrollArea
         speed={0.8}
         className="logger-scroll"
         contentClassName="content"
         horizontal={false}
       >
+
         {moduleData.expanded && (
           <Table
             aria-label="Example table with static content"
@@ -66,43 +80,34 @@ function Logger({ moduleData, index }: ModuleProps) {
             }}
           >
             <Table.Header>
-              <Table.Column css={{ backgroundColor: "black" }}>
+              <Table.Column css={{ backgroundColor: "black", fontSize:"$md" }}>
                 Data
               </Table.Column>
-              <Table.Column css={{ backgroundColor: "black" }}>
+              <Table.Column css={{ backgroundColor: "black", fontSize:"$md"  }}>
                 Device
               </Table.Column>
-              <Table.Column css={{ backgroundColor: "black" }}>
+              <Table.Column css={{ backgroundColor: "black", fontSize:"$md"  }}>
                 Event
               </Table.Column>
-              {/* <Table.Column></Table.Column> */}
-              {/* <Table.Column>STATUS</Table.Column> */}
             </Table.Header>
             <Table.Body>
               {logs.map((log: MidiData, index: number) => {
-                // const dateString =
-                // log.eventTime.getHours() +
-                // ":" +
-                // log.time.getMinutes() +
-                // ":" +
-                // log.time.getSeconds();
                 return (
                   <Table.Row
                     css={{
                       padding: "$xs",
                       backgroundColor: index % 2 === 0 ? "#1f2224" : "",
-
                       textAlign: "left",
                     }}
                     key={index}
                   >
-                    <Table.Cell css={{ fontSize: "$xs" }}>
-                      {JSON.stringify(log.data)}
+                    <Table.Cell css={{  }}>
+                      {log.data[2]?`${log.data[0]}, ${log.data[1]}, ${log.data[2]}`:`${log.data[0]}, ${log.data[1]}`}
                     </Table.Cell>
-                    <Table.Cell css={{ fontSize: "$xs" }}>
+                    <Table.Cell>
                       {log.deviceName}
                     </Table.Cell>
-                    <Table.Cell css={{ fontSize: "$xs" }}>
+                    <Table.Cell>
                       {log.eventType}
                     </Table.Cell>
                   </Table.Row>

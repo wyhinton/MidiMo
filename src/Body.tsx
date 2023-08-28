@@ -75,60 +75,60 @@ function Body({ midiInput, midiOutput }: BodyProps) {
     updateGlobal,
   } = useStore();
 
-  let smidi = {};
   useEffect(() => {
     //@ts-ignore
     if (midiInput) {
-      // console.log(midiInput);
       midiInput.onmidimessage = (msg: any) => {
-        // console.log(msg);
-        smidi = {
+        const newMidiMessage = {
           data: msg.data,
           deviceName: msg.srcElement.name,
           eventType: getMessageType(msg.data),
           blocked: false,
           eventTime: new Date(msg.timeStamp),
         } as MidiData;
-        console.log(smidi)
-        setCurrentMidiMessage(smidi as MidiData);
-        const results = createFuncChain(smidi as MidiData, modules);
-        setTChain(results);
-        const finalOutput = results[results.length - 1];
-        setShowAction(true);
-        // console.log(outputDevice);
-        if (finalOutput) {
-          try {
-            // outputDevice?.send([243, 0, 64]);
-            if (midiOutput && !finalOutput.blocked) {
-              // console.log(finalOutput);
-              midiOutput?.send(finalOutput.data);
-              setShowOutputIndicatorLocal(true);
-
-              const hideOutputIndicatorTimer = setTimeout(() => {
-                // console.log("running output desc");
-                if (showOutputIndicatorLocal) {
-                  setShowOutputIndicatorLocal(false);
-                }
-              }, INDICATOR_LENGTH);
-              // return () => clearTimeout(hideOutputIndicatorTimer);
+        if (newMidiMessage.eventTime?.toISOString() !== currentMidiMessage?.eventTime?.toISOString()){
+          setCurrentMidiMessage(newMidiMessage as MidiData);
+          const results = createFuncChain(newMidiMessage as MidiData, modules);
+          setTChain(results);
+          const finalOutput = results[results.length - 1];
+          setShowAction(true);
+          // // console.log(outputDevice);
+          if (finalOutput) {
+            try {
+              // outputDevice?.send([243, 0, 64]);
+              if (midiOutput && !finalOutput.blocked) {
+                // console.log(finalOutput);
+                midiOutput?.send(finalOutput.data);
+                setShowOutputIndicatorLocal(true);
+  
+                const hideOutputIndicatorTimer = setTimeout(() => {
+                  // console.log("running output desc");
+                  if (showOutputIndicatorLocal) {
+                    setShowOutputIndicatorLocal(false);
+                  }
+                }, INDICATOR_LENGTH);
+                // return () => clearTimeout(hideOutputIndicatorTimer);
+              }
+            } catch (e) {
+              console.error(e);
+              console.error(
+                `could send midi message ${JSON.stringify(finalOutput)}`
+              );
             }
-          } catch (e) {
-            console.error(e);
-            console.error(
-              `could send midi message ${JSON.stringify(finalOutput)}`
-            );
           }
+          // globals.forEach((g) => {
+          //   //@ts-ignore
+          //   updateGlobal(g.id, window.midi[g.name]);
+          //   //@ts-ignore
+          //   // console.log("settings global ", g, window.midi[g.name]);
+          // });
+          // setFinalOutput(finalOutput);
         }
-        globals.forEach((g) => {
-          //@ts-ignore
-          updateGlobal(g.id, window.midi[g.name]);
-          //@ts-ignore
-          // console.log("settings global ", g, window.midi[g.name]);
-        });
-        setFinalOutput(finalOutput);
+
       };
     }
-  }, [midiInput, modules, outputDevice, setStartMessage]);
+  }, [midiInput, finalOutput]);
+  // }, [midiInput, modules, outputDevice, setStartMessage]);
 
   useEffect(() => {
     // console.log(tChain);
