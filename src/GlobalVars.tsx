@@ -1,34 +1,20 @@
 import { Button, Grid } from "@nextui-org/react";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import useStore, { GlobalVar } from "./store";
 import _ from "lodash";
-import { ItemParams, useContextMenu } from "react-contexify";
+import { useContextMenu } from "react-contexify";
 import { brightColor } from "./theme";
 import GlobalVarItem from "./GlobalVarItem";
-import { FcGlobe, FcProcess } from "react-icons/fc";
+import { FcGlobe } from "react-icons/fc";
 import MidiMapping from "./MidiMapping";
 import Debugger from "./Debugger";
-const updateGlobalVar = (v: GlobalVar) => {
-  let w = window as any;
-  if (!w.midi) {
-    w.midi = {};
-  }
-  if (!w.midi[v.name]) {
-    w[v.name] = v.value;
-  }
-  if (w.midi[v.name] !== v.value) {
-    w.midi[v.name] = v.value;
-  }
-};
 const MENU_ID = "GLOBAL_VARS";
 const GlobalVars = (): JSX.Element => {
-  const { globals, addGlobal, deleteGlobal, showMidiMap } = useStore();
-  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const { globals, addGlobal, showMidiMap } = useStore();
   const [selectedGlobal, setSelectedGlobal] = useState<GlobalVar | undefined>(
     undefined
   );
 
-  const [expanded, setExpanded] = useState(false);
   const { show } = useContextMenu({
     id: MENU_ID,
   });
@@ -49,36 +35,11 @@ const GlobalVars = (): JSX.Element => {
     });
   }
 
-  // const trackVisibility = (isVisible: boolean) => {
-  //   console.log("Menu is", isVisible);
-  // };
-
-  const ref = useRef(null);
-  // useOnClickOutside(ref, handleClickOutside);
-
-  const handleClickOutside = () => {
-    let menudiv = document.querySelector("#menuportal") as HTMLDivElement;
-    menudiv.style.display = "none";
-    setContextMenuVisible(false);
-    // console.log("clicked outside");
-  };
-
-  const handleItemClick = ({ id, event, props }: ItemParams) => {
-    console.log(id);
-    if (id === "delete") {
-      console.log("got delete");
-      if (selectedGlobal) {
-        console.log("deleting", selectedGlobal);
-        deleteGlobal(selectedGlobal.id);
-      }
-    }
-  };
-
   return (
     <>
       <div className="h-50">
         <div
-          className="h5 d-flex align-items-center"
+          className="d-flex align-items-center"
           style={{ backgroundColor: brightColor, padding: 10, height: 60 }}
         >
           Globals
@@ -100,7 +61,7 @@ const GlobalVars = (): JSX.Element => {
           })}
           <Grid xs={12} justify="space-around">
             <Button
-              onClick={(e) => {
+              onClick={() => {
                 addGlobal({
                   name: `global${globals.length}`,
                   value: `global${globals.length}`,

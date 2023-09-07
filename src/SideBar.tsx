@@ -42,7 +42,7 @@ const SideBar = (): JSX.Element =>{
     const handleToggleSidebar = (value: boolean) => {
         setToggled(value);
     };
-    const {toggleMidiMap} = useStore()
+    const {toggleMidiMap, clearGlobals, clearMidiChain} = useStore()
     const handleCollapsedChange = () => {
         setCollapsed(!collapsed);
       };
@@ -115,7 +115,12 @@ const SideBar = (): JSX.Element =>{
           icon={<FaSave />}>
             Midi Map 
           </MenuItem>
-          <MenuItem icon={<FaTrash />}>
+          <MenuItem 
+          onMouseDown={(e) => {
+            clearGlobals()
+            clearMidiChain()
+          }}
+          icon={<FaTrash />}>
             Clear 
           </MenuItem>
           {/* <MenuItem icon={<FaGem />}>

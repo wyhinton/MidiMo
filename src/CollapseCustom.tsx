@@ -52,7 +52,6 @@ const CollapseCustom = ({
           setModuleDescription(module.id, e.target!.value ?? "")
         }}
         initialText={module.description}/>
-        {title}
         <div
           style={{
             minWidth: "30px",

@@ -63,6 +63,7 @@ interface TodoState {
   inputDeviceName: string | undefined;
   outputDeviceName: string | undefined;
   outputDevice: Output | undefined;
+  inputDevices: string[];
   showProcessingIndicator: boolean;
   showOutputIndicator: boolean;
   showMidiMap: boolean;
@@ -90,6 +91,7 @@ interface TodoState {
   setMidiChainData: (dataArr: MidiData[]) => void;
   setShowProcessingIndicator: (should: boolean) => void;
   setShowOutputIndicator: (should: boolean) => void;
+  selectInputItem: (item: string)=>void;
   // setO: (should: boolean) => void;
   toggleCompletedState: (id: string) => void;
   toggleMidiMap: () => void;
@@ -160,6 +162,7 @@ export const useStore = create<TodoState>()(
         midiChain: [],
         outputDevice: undefined,
         inputDevice: undefined,
+        inputDevices: [],
         inputDeviceName: undefined,
         outputDeviceName: undefined,
         showProcessingIndicator: false,
@@ -237,6 +240,7 @@ export const useStore = create<TodoState>()(
           set((state) => ({
             midiChain: [],
             modules: [],
+            inputDevices: [],
           }));
         },
         deleteModule: (id) => {
@@ -295,6 +299,11 @@ export const useStore = create<TodoState>()(
                 ? ({ ...todo, processor: funcCarrier } as ModuleData)
                 : todo
             ),
+          }));
+        },
+        selectInputItem: (inputDeviceId) => {
+          set((state) => ({
+            inputDevices: state.inputDevices.includes(inputDeviceId)?state.inputDevices.filter(d=>d!==inputDeviceId):[...state.inputDevices, inputDeviceId],
           }));
         },
         setOutputDevice: (outDevice) => {

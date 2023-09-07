@@ -14,13 +14,12 @@ import "./styles.scss"
 
 import BottomToolbar from "./BottomToolbar";
 import GlobalVars from "./GlobalVars";
-import KeyboardPiano from "./keyBoardManger";
 
 
 function App() {
   //@ts-ignore
   // console.log(MIDI);
-  const { loadStore, globals, setOutputDevice, showMidiMap, toggleMidiMap } = useStore();
+  const { loadStore, globals } = useStore();
   const onDrop = (files: File[]) => {
     console.log(files);
     console.log(
@@ -31,6 +30,7 @@ function App() {
         console.log(parsedSettings);
       })
     );
+
   };
   const [octave, setOctave] = useState(3)
 
@@ -84,19 +84,20 @@ function App() {
   //   }
   // );
 
-  // useKeyboardShortcut(
-  //   ["z"],
-  //   (shortcutKeys) => {
-  //     if (octave>0){
-  //       setOctave(octave-1)
-  //     }
+  useKeyboardShortcut(
+    ["27"],
+    (shortcutKeys) => {
+      console.log("hello")
+      // if (octave>0){
+      //   setOctave(octave-1)
+      // }
 
-  //   },
-  //   {
-  //     overrideSystem: true,
-  //     ignoreInputFields: true,
-  //   }
-  // );
+    },
+    {
+      overrideSystem: true,
+      ignoreInputFields: true,
+    }
+  );
   
   // useEffect(()=>{
   //   //@ts-ignore
@@ -134,10 +135,10 @@ function App() {
               {(inputs, outputs) => {
                 return (
                   <MidiSupply inputs={inputs} outputs={outputs}>
-                    {(input, output) => {
+                    {(input, output, activeInputs) => {
                       return (
                         <>
-                          <Body midiInput={input} midiOutput={output} />
+                          <Body midiInput={input} midiOutput={output} activeInputs={activeInputs} />
                         </>
                       );
                     }}

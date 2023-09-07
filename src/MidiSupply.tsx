@@ -6,11 +6,12 @@ import { useMIDI, Input, Output, useMIDIMessage } from "@react-midi/hooks";
 import { useStore } from "./store";
 import { motion, useAnimationControls } from "framer-motion";
 import { setTimeout } from "timers/promises";
+import NewMidiSelector from "./NewMidiSelector";
 
 interface MidiSupplyProps {
   inputs: Input[];
   outputs: Output[];
-  children: (input: Input, output: Output) => JSX.Element | JSX.Element[];
+  children: (input: Input, output: Output, activeInputs: Input[]) => JSX.Element | JSX.Element[];
 }
 
 const MidiSupply = ({
@@ -21,12 +22,10 @@ const MidiSupply = ({
   const {
     setOutputDevice,
     showOutputIndicator,
-    setInputDeviceName,
     inputDeviceName,
-    inputDevice,
-    outputDevice,
     outputDeviceName,
     setOutputDeviceName,
+    inputDevices,
   } = useStore();
   const [activeInput, setactiveInput] = useState<Input | undefined>(
     inputs.find((i) => i.name === inputDeviceName)
@@ -39,10 +38,26 @@ const MidiSupply = ({
     outputs[0] ?? undefined
   );
 
+  const [activeInputs, setActiveInputs] = useState<Input[]>([])
+
+  useEffect(()=>{
+    console.log(inputDevices)
+    const active = inputs.filter(i=>inputDevices.includes(i.id))
+    setActiveInputs(active)
+    inputs.map(i=>{
+      if (!inputDevices.includes(i.id)){
+        console.log("should remove")
+        console.log(i.name)
+        i.onmidimessage = (msg) => {}
+      }
+    })
+  },[inputDevices, inputs]);
+
   return (
     <>
       {/* <motion.div animate={controls}> */}
-      <MidiSelector
+      <NewMidiSelector items={inputs} storeItems={inputDevices}></NewMidiSelector>
+      {/* <MidiSelector
         midiType="input"
         activeItem={activeInput}
         selectedKeys={[inputDeviceName]}
@@ -50,13 +65,14 @@ const MidiSupply = ({
           setactiveInput(connection as Input);
           setInputDeviceName(connection.name);
         }}
+
         midiItems={inputs}
         noItemsMessage="No Midi Inputs Detected"
         label="Input Device"
-      />
+      /> */}
       {/* </motion.div> */}
       {activeInput && activeOutput ? (
-        children(activeInput, activeOutput)
+        children(activeInput, activeOutput, activeInputs)
       ) : (
         <div>input or output is missing</div>
       )}

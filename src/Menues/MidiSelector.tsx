@@ -4,10 +4,8 @@ import { Connection, Input, Output } from "@react-midi/hooks";
 import useInterval from "../UseInterval";
 import { useStore, MidiData } from "../store";
 import { map } from "../utils";
+import NewMidiSelector from "../NewMidiSelector";
 
-function hasNumber(myString: string) {
-  return /\d/.test(myString);
-}
 
 function Showcase({
   label,
@@ -26,14 +24,6 @@ function Showcase({
     </Container>
   );
 }
-const ease = (t: number, b: number, _c: number, d: number): number => {
-  var c = _c - b;
-  if ((t /= d / 2) < 1) {
-    return (c / 2) * t * t * t + b;
-  } else {
-    return (c / 2) * ((t -= 2) * t * t + 2) + b;
-  }
-};
 
 interface MidiSelectorProps {
   midiItems: Input[] | Output[];
@@ -53,10 +43,7 @@ function easeOutCubic(x: number): number {
 const emptyColor = "rgba(23,201,100,0)";
 export const MidiSelector = ({
   midiItems,
-  noItemsMessage,
   label,
-  activeItem,
-  midiType,
   onSelectionChange,
   isProcessing,
   selectedKeys,
@@ -113,6 +100,7 @@ export const MidiSelector = ({
         boxShadow: "box-shadow: 0px 10px 57px -17px #17C964",
       }}
     >
+
       {/* <div>{value}</div> */}
       {/* <div>{debouncedValue}</div> */}
       <Showcase label={label + ":"}>
