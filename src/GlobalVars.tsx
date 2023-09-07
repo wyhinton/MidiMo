@@ -5,7 +5,9 @@ import _ from "lodash";
 import { ItemParams, useContextMenu } from "react-contexify";
 import { brightColor } from "./theme";
 import GlobalVarItem from "./GlobalVarItem";
-import { FcGlobe } from "react-icons/fc";
+import { FcGlobe, FcProcess } from "react-icons/fc";
+import MidiMapping from "./MidiMapping";
+import Debugger from "./Debugger";
 const updateGlobalVar = (v: GlobalVar) => {
   let w = window as any;
   if (!w.midi) {
@@ -20,7 +22,7 @@ const updateGlobalVar = (v: GlobalVar) => {
 };
 const MENU_ID = "GLOBAL_VARS";
 const GlobalVars = (): JSX.Element => {
-  const { globals, addGlobal, deleteGlobal } = useStore();
+  const { globals, addGlobal, deleteGlobal, showMidiMap } = useStore();
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [selectedGlobal, setSelectedGlobal] = useState<GlobalVar | undefined>(
     undefined
@@ -72,50 +74,53 @@ const GlobalVars = (): JSX.Element => {
     }
   };
 
-  // useEffect(() => {
-  //   // console.log(globals);
-  //   for (let i = 0; i < globals.length; i++) {
-  //     const gv = globals[i];
-  //     updateGlobalVar(gv);
-  //   }
-  // }, []);
   return (
-    <div>
-      <div
-        className="h5 d-flex align-items-center"
-        style={{ backgroundColor: brightColor, padding: 10, height: 60 }}
-      >
-        Globals
-        <FcGlobe />
+    <>
+      <div className="h-50">
+        <div
+          className="h5 d-flex align-items-center"
+          style={{ backgroundColor: brightColor, padding: 10, height: 60 }}
+        >
+          Globals
+          <FcGlobe />
+        </div>
+        <div
+          className="overflow-auto"
+          style={{ maxHeight: "calc(50vh - 60px)" }}
+        >
+          {globals.map((g, i) => {
+            return (
+              <GlobalVarItem
+                key={i}
+                globalVar={g}
+                selected={selectedGlobal?.id === g.id}
+                onContextMenu={handleContextMenu}
+              />
+            );
+          })}
+          <Grid xs={12} justify="space-around">
+            <Button
+              onClick={(e) => {
+                addGlobal({
+                  name: `global${globals.length}`,
+                  value: `global${globals.length}`,
+                  defaultValue: `global${globals.length}`,
+                  id: globals.length,
+                });
+                // console.log(e);
+              }}
+              className="w-100 rounded-0"
+            >
+              Add New Variable
+            </Button>
+          </Grid>
+        </div>
       </div>
-      <div style={{maxHeight: "calc(100vh - 60px)"}}>
-        {globals.map((g, i) => {
-          return (
-            <GlobalVarItem
-              globalVar={g}
-              selected={selectedGlobal?.id === g.id}
-              onContextMenu={handleContextMenu}
-            />
-          );
-        })}
-        <Grid xs={12} justify="space-around">
-          <Button
-            onClick={(e) => {
-              addGlobal({
-                name: `global${globals.length}`,
-                value: `global${globals.length}`,
-                defaultValue: `global${globals.length}`,
-                id: globals.length,
-              });
-              // console.log(e);
-            }}
-            className="w-100 rounded-0"
-          >
-            Add New Variable
-          </Button>
-        </Grid>
+      <div className="h-50">
+        {!showMidiMap && <Debugger />}
+        <MidiMapping />
       </div>
-    </div>
+    </>
   );
 };
 

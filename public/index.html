@@ -47,9 +47,25 @@
       transform: translate(-50%, -50%);
       /* pointer-events: none; */
     }
+    #midiMappingPortal {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      z-index: 100000000;
+      display: none;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      /* pointer-events: none; */
+    }
   </style>
-  <body>
+  <body id="BODY-ELEMENT">
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    <script>
+      const getAllMappable = () =>{
+        return document.querySelectorAll('[data-mappable="true"]');
+      }
+    </script>
     <script>
       var SOMETHING = "HELLO";
       function SAY_HELLO() {
@@ -178,6 +194,7 @@
     </script>
     <div id="menuportal"></div>
     <div id="fullScreenPortal"></div>
+    <div id="midiMappingPortal"></div>
     <div id="root"></div>
     <!--
       This HTML file is a template.

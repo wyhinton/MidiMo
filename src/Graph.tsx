@@ -17,9 +17,9 @@ export interface PosUpdate {
 }
 
 interface EnvelopeGraphProps {
-  defaultXa: number;
-  defaultXd: number;
-  defaultXr: number;
+  attackX: number;
+  decayX: number;
+  releaseX: number;
   defaultYa: number;
   defaultYs: number;
   ya: number;
@@ -70,9 +70,9 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
 
 
   const {
-    defaultXa,
-    defaultXd,
-    defaultXr,
+    attackX: defaultXa,
+    decayX: defaultXd,
+    releaseX: defaultXr,
     defaultYa,
     defaultYs,
     ratio,
@@ -152,10 +152,10 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
       window.removeEventListener("mouseup", handleMouseUp);
     //   window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [props.attackX, props.decayX, props.releaseX]);
   const viewHeight = 20;
   useEffect(()=>{
-    console.log(props.time);
+    // console.log(props.time);
     setCurrentPosition(dbgY(props.time))
     props.onPositionChange({pos: currentPosition, value: 1-(currentPosition.y/viewHeight)})
   },[props.time]);
@@ -216,11 +216,10 @@ const EnvelopeGraph: React.FC<EnvelopeGraphProps> = (props) => {
     let y = 1.-getEnvelopeValueAtX(xPos);
     y *= 20.;
     const path = pathRef.current;
-    console.log(path)
     if (path){
       const t = path.getPointAtLength(xPos*100)
       return t;
-      console.log(t)
+      // console.log(t)
  
     }
     // console.log(y)

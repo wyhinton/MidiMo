@@ -14,12 +14,13 @@ import "./styles.scss"
 
 import BottomToolbar from "./BottomToolbar";
 import GlobalVars from "./GlobalVars";
+import KeyboardPiano from "./keyBoardManger";
 
 
 function App() {
   //@ts-ignore
   // console.log(MIDI);
-  const { loadStore, globals } = useStore();
+  const { loadStore, globals, setOutputDevice, showMidiMap, toggleMidiMap } = useStore();
   const onDrop = (files: File[]) => {
     console.log(files);
     console.log(
@@ -36,25 +37,6 @@ function App() {
   //MIDDLE C IS 60
 
 
-  const note_values={
-    "a": 0,
-    "w": 1,
-    "s": 2,
-    "e": 3,
-    "d": 4,
-    "f": 5,
-    "t": 6,
-    "g": 7, 
-    "y": 8,
-    "h": 9,
-    "u": 10,
-    "j": 11,
-    "k": 12,
-    "o": 13,
-    "l": 14,  
-  }
-
-
   const ensureGlobalVars = () =>{
     //@ts-ignore
     if (!window.midi){
@@ -69,50 +51,58 @@ function App() {
   }
   useEffectOnce(()=>{
     console.log("doing once")
-    window.addEventListener("keydown", (e)=>{
-        const root = 14*octave;
-        //@ts-ignore
-        const keyVal = note_values[e.key as string]
-        const noteVal = root+keyVal
-        console.log(keyVal)
-        console.log(noteVal)
-    })
+    // const piano = new KeyboardPiano();
+    // window.addEventListener("keydown", (e)=>{
+    //     const root = 14*octave;
+    //     //@ts-ignore
+    //     const keyVal = note_values[e.key as string]
+    //     const noteVal = root+keyVal
+    //     console.log(showMidiMap)
+    //     console.log(e.keyCode)
+    //     if (showMidiMap===true && e.keyCode===27){
+    //       console.log("HERE")
+    //       toggleMidiMap()
+    //     }
+    //     console.log(keyVal)
+    //     console.log(noteVal)
+    // })
     ensureGlobalVars()
+
   })
 
-  useKeyboardShortcut(
-    ["x"],
-    (shortcutKeys) => {
-      if (octave<7){
-        setOctave(octave+1)
-      }
+  // useKeyboardShortcut(
+  //   ["x"],
+  //   (shortcutKeys) => {
+  //     if (octave<7){
+  //       setOctave(octave+1)
+  //     }
 
-    },
-    {
-      overrideSystem: true,
-      ignoreInputFields: true,
-    }
-  );
+  //   },
+  //   {
+  //     overrideSystem: true,
+  //     ignoreInputFields: true,
+  //   }
+  // );
 
-  useKeyboardShortcut(
-    ["z"],
-    (shortcutKeys) => {
-      if (octave>0){
-        setOctave(octave-1)
-      }
+  // useKeyboardShortcut(
+  //   ["z"],
+  //   (shortcutKeys) => {
+  //     if (octave>0){
+  //       setOctave(octave-1)
+  //     }
 
-    },
-    {
-      overrideSystem: true,
-      ignoreInputFields: true,
-    }
-  );
+  //   },
+  //   {
+  //     overrideSystem: true,
+  //     ignoreInputFields: true,
+  //   }
+  // );
   
-  useEffect(()=>{
-    //@ts-ignore
-    console.log(window.midi)
-    console.log(octave); 
-  },[octave]);
+  // useEffect(()=>{
+  //   //@ts-ignore
+  //   console.log(window.midi)
+  //   console.log(octave); 
+  // },[octave]);
 
   const { getRootProps, isDragActive, getInputProps } = useDropzone({
     onDrop,

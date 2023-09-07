@@ -141,13 +141,6 @@ body {
   color: white;
 }
 
-.text-monospace{
-  font-family: monospace;
-}
-
-.text-blue{
-  color: rgb(13 110 253);
-}
 
 
 
@@ -164,4 +157,24 @@ body {
 
 .bg-black{
   background-color: black !important;
+}
+
+.code-text{
+  font-family: monospace;
+}
+
+.text-monospace{
+  font-family: monospace;
+}
+
+.bg-secondary{
+  background-color: rgb(13 110 253) !important;
+}
+
+.text-blue{
+  color: rgb(13 110 253);
+}
+
+.bg-dark-blue{
+  background-color: #202124 !important
 }

@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { EffectType, MessageType } from "./types";
 import { Connection, Input, Output } from "@react-midi/hooks/dist/types";
 import { defaultFilterModuleSettings, moduleDefaultsDict } from "./Modules/ModuleDefaults";
+import KeyboardPiano, { KeyBoardPianoState } from "./keyBoardManger";
 
 export interface FuncCarrier {
   func: MidiProcessor;
@@ -18,6 +19,7 @@ export interface MidiData {
   blocked?: boolean;
   eventTime?: Date;
 }
+
 export interface ModuleData {
   id: string;
   description: string;
@@ -63,6 +65,10 @@ interface TodoState {
   outputDevice: Output | undefined;
   showProcessingIndicator: boolean;
   showOutputIndicator: boolean;
+  showMidiMap: boolean;
+  piano: KeyboardPiano;
+  selectedModule: string|undefined;
+  setPianoState: (keyboardState: KeyBoardPianoState) => void;
   addModule: (description: string, effectType: EffectType) => void;
   addGlobal: (global: GlobalVar) => void;
   clearGlobals: () => void;
@@ -70,6 +76,7 @@ interface TodoState {
   updateAllGlobals: () =>void;
   deleteGlobal: (id: number) => void;
   deleteModule: (id: string) => void;
+  selectModule: (id: string) => void;
   loadStore: (settings: StoreLoad) => void;
   removeTodo: (id: string) => void;
   setProcessor: (id: string, processor: FuncCarrier) => void;
@@ -78,12 +85,14 @@ interface TodoState {
   setOutputDeviceName: (outDeviceName: string | undefined) => void;
   setOutputDevice: (device: Output | undefined) => void;
   setModuleData: (id: string, data: any) => void;
+  setModuleDescription: (id: string, description: string) => void;
   setStartMessage: (msg: MidiData) => void;
   setMidiChainData: (dataArr: MidiData[]) => void;
   setShowProcessingIndicator: (should: boolean) => void;
   setShowOutputIndicator: (should: boolean) => void;
   // setO: (should: boolean) => void;
   toggleCompletedState: (id: string) => void;
+  toggleMidiMap: () => void;
   toggleExpanded: (id: string) => void;
   clearMidiChain: () => void;
   reorder: (sourceIndex: number, destinationIndex: number) => void;
@@ -98,7 +107,7 @@ export const pipe =
 
 
 
-
+const myKeyBoard = new KeyboardPiano({currentOctave: 3});
 
 
 
@@ -145,6 +154,7 @@ export const useStore = create<TodoState>()(
             expanded: false,
           },
         ],
+        selectedModule: undefined,
         globals: [],
         startMessage: undefined,
         midiChain: [],
@@ -154,6 +164,17 @@ export const useStore = create<TodoState>()(
         outputDeviceName: undefined,
         showProcessingIndicator: false,
         showOutputIndicator: false,
+        showMidiMap: false,
+        piano: myKeyBoard,
+        setPianoState: (pianoState) => {
+          myKeyBoard.setState(pianoState)
+          // set((state) => {
+          //   return {
+          //   piano: new KeyboardPiano(pianoState)
+          //   // piano: new KeyboardPiano(pianoState)
+          //   }
+          // });
+        },
         setMidiChainData: (dataArr) => {
           set((state) => ({
             midiChain: dataArr,
@@ -223,6 +244,11 @@ export const useStore = create<TodoState>()(
             modules: state.modules.filter((m) => m.id !== id),
           }));
         },
+        selectModule: (id) => {
+          set((state) => ({
+            selectedModule: id
+          }));
+        },
         loadStore: (data) => {
           set((state) => ({
             modules: data.state.modules,
@@ -255,6 +281,11 @@ export const useStore = create<TodoState>()(
                 ? ({ ...todo, expanded: !todo.expanded } as ModuleData)
                 : todo
             ),
+          }));
+        },
+        toggleMidiMap: () => {
+          set((state) => ({
+            showMidiMap: !state.showMidiMap
           }));
         },
         setProcessor: (id, funcCarrier) => {
@@ -315,6 +346,21 @@ export const useStore = create<TodoState>()(
             ),
           }));
         },
+        setModuleDescription: (id, description) => {
+          set((state) => {
+            return {
+              modules: state.modules.map((todo) =>
+                todo.id === id
+                  ? ({
+                      ...todo,
+                      description: description,
+                    } as ModuleData)
+                  : todo
+                ),
+            }
+          });
+        },
+        //big cap
       }),
       {
         name: "midi-storage", // name of item in the storage (must be unique)

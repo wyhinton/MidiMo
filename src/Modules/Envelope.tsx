@@ -7,6 +7,32 @@ import { useStore } from "../store";
 import { FilterModuleData } from "./ModuleDefaults";
 import EnvelopeGraph, { GraphPositions, PosUpdate } from "../Graph";
 import { brightColor } from "../theme";
+import { useMIDIOutput } from "@react-midi/hooks";
+import { map } from "../utils";
+
+function generateControlChangeMessage(channel: number, controlNumber: number, controlValue: number): number[] {
+  // Ensure valid values
+  channel = Math.max(0, Math.min(15, channel)); // MIDI channels are 0-15
+  controlNumber = Math.max(0, Math.min(127, controlNumber)); // Control numbers are 0-127
+  controlValue = Math.max(0, Math.min(127, controlValue)); // Control values are 0-127
+
+  // Calculate the status byte (0xB0 for Control Change, plus the channel)
+  const statusByte = 0xB0 | channel;
+
+  // Create the MIDI message as a Uint8Array
+  const message = [statusByte, controlNumber, controlValue];
+
+  return message;
+}
+
+interface GraphState{
+  time: number;
+  attackX: number;
+  decayX: number;
+  releaseX: number;
+  minValue: number;
+  maxValue: number;
+}
 
 let styles = {
     line: {
@@ -33,11 +59,23 @@ let styles = {
     }
   };
 const ENVELOPE_DURATION = 15000
+
+const initialGraphState ={
+  time: 0,
+  attackX: 0,
+  minValue: 0,
+  maxValue: 127,
+  releaseX: 1,
+  decayX: 1,
+}
+
 const EnvelopeModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
   const { setModuleData, setProcessor, outputDevice } = useStore();
   const [filterModuleData, setfilterModuleData] = useState<FilterModuleData>(
     moduleData.data as FilterModuleData
   );
+  const [graphState, setGraphState] = useState<GraphState>(initialGraphState)
+
   const [currentValue, setCurrentValue] = useState(0)
   const [envelopePosition, setEnvelopePosition] = useState(0);
   const triggerEnvelope = () => {
@@ -50,14 +88,16 @@ const EnvelopeModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
       // console.log(progress)
       if (progress < 1) {
         // Update the envelope position
-        setEnvelopePosition(progress);
-        
-  
+        setGraphState((gs)=>({...gs, time: progress}))
+        // console.log(outputDevice)
+        // const {minValue, maxValue}= graphState;
+        if (outputDevice){
+          outputDevice.send(generateControlChangeMessage(1, 2, map(progress, 0, 1, 0, 127)))
+        }
         // Continue animation
         requestAnimationFrame(animate);
       } else {
-        // Envelope animation is complete
-        setEnvelopePosition(0); // Reset the envelope position
+        setGraphState((gs)=>({...gs, time: 0}))
       }
     };
 
@@ -90,15 +130,24 @@ const EnvelopeModule = ({ moduleData, midiData }: ModuleProps): JSX.Element => {
         <button onClick={triggerEnvelope}>Trigger Envelope</button>
         <div>{currentValue}</div>
         <div className="d-flex">
-          <Input type={"number"} min={0} max={127}></Input>
+          <Input type={"number"} onChange={(e)=>{setGraphState(gs=>({...gs, minValue: parseInt(e.target.value)}))}} min={0} max={127} value={graphState.minValue}></Input>
+          <Input className = {"ps-2"} onChange={(e)=>{setGraphState(gs=>({...gs, maxValue: parseInt(e.target.value)}))}} type={"number"} value={graphState.maxValue} min={0} max={127}></Input>
+          <Input onChange={(e)=>{setGraphState(gs=>({...gs, attackX: parseFloat(e.target.value)}))}} type={"number"} value={graphState.attackX} className = {"ps-2"}  step={.1} min={0} max={1}></Input>
+          <Input onChange={(e)=>{setGraphState(gs=>({...gs, decayX: parseFloat(e.target.value)}))}} className = {"ps-2"} type={"number"} step={.1} min={0} max={1}></Input>
+          <Input onChange={(e)=>{setGraphState(gs=>({...gs, releaseX: parseFloat(e.target.value)}))}} className = {"ps-2"} type={"number"} step={.1} min={0} max={1}></Input>
           <Input className = {"ps-2"} type={"number"} min={0} max={127}></Input>
         </div>
         <EnvelopeGraph 
-        time={envelopePosition}
+        time={graphState.time}
         onPositionChange={onPositionChange}
         ya={1 - envelopePosition * 0.5}
         ys={envelopePosition * 0.5}
-        defaultXa={1} defaultYa={1} defaultYs={1} defaultXd={1} defaultXr={1} styles= {styles}/>
+        attackX={graphState.attackX} 
+        defaultYa={1}
+        defaultYs={1}
+        decayX={graphState.decayX}
+        releaseX={graphState.releaseX}
+        styles= {styles}/>
     </Container>
   );
 };

@@ -33,6 +33,8 @@ const ToggleButton = ({ status, onChange, moduleIndex }: ToggleButtonProps) => {
   const boxShadowSize = 5;
   return (
     <button
+      data-mappable={true}
+      data-mappingid={`module_toggle_button_${moduleIndex}`}
       onClick={(e) => {
         onChange(curStatus);
       }}

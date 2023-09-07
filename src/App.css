@@ -94,4 +94,6 @@ div[data-rbd-droppable-id="droppable"] div{
   background-color: #a8bbbf;
 }
 
-
+.semi-bold{
+  font-weight: 600;
+}

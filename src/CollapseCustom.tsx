@@ -1,9 +1,8 @@
-import { Card, Container, Text } from "@nextui-org/react";
-import React, { useState, useEffect, useRef } from "react";
+import React, {  } from "react";
 import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
-import useStore, { MidiData, ModuleData } from "./store";
+import EditableText from "./EditableText";
+import useStore, { ModuleData } from "./store";
 import ToggleButton from "./ToggleButton";
-import useMidiChain from "./UseMidiChain";
 
 interface CollapseProps {
   module: ModuleData;
@@ -21,12 +20,12 @@ const CollapseCustom = ({
   index,
   dragHandleProps,
 }: CollapseProps): JSX.Element => {
-  const { toggleCompletedState } = useStore();
+  const { toggleCompletedState, setModuleDescription } = useStore();
 
   return (
     <>
       <div
-        className="nextui-collapse-title nextui-collapse-view"
+
         {...dragHandleProps}
         style={{
           cursor: "auto",
@@ -35,16 +34,24 @@ const CollapseCustom = ({
           alignItems: "center",
           padding: "var(--nextui-space-lg)",
           backgroundColor: "var(--nextui-colors-backgroundContrast)",
-          opacity: module.active ? "1" : ".5",
+          opacity: module.active ? "1" : ".5", 
         }}
       >
         <ToggleButton
           onChange={() => {
+       
             toggleCompletedState(module.id);
           }}
           moduleIndex={index}
           status={module.active ? "active" : "inactive"}
         />
+        <EditableText 
+        onChange={(e)=>{
+          console.log(module)
+          console.log(e.target.value)
+          setModuleDescription(module.id, e.target!.value ?? "")
+        }}
+        initialText={module.description}/>
         {title}
         <div
           style={{

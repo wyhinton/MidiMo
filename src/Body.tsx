@@ -10,11 +10,15 @@ import { getMessageType } from "./utils";
 import "font-awesome/css/font-awesome.min.css";
 import { brightColor } from "./theme";
 import { cloneDeep } from "lodash";
+import { useEffectOnce } from "usehooks-ts";
+import Module from "module";
+import _ from "lodash";
 
 interface BodyProps {
   midiInput: Input;
   midiOutput: Output;
 }
+
 
 const INDICATOR_LENGTH = 10;
 
@@ -32,10 +36,7 @@ const createFuncChain = (
       } else {
         startMidi = startMidi;
       }
-      // console.log(startMidi);
-      // processChain[index] = startMidi;
       processChain[index] = cloneDeep(startMidi);
-      // processChain[index] = JSON.parse(JSON.stringify(startMidi));
       if (startMidi.blocked) {
         break;
       }
@@ -56,6 +57,7 @@ function Body({ midiInput, midiOutput }: BodyProps) {
   const [showAction, setShowAction] = useState(false);
   const [showOutputIndicatorLocal, setShowOutputIndicatorLocal] =
     useState(false);
+  const {setOutputDevice, piano, setPianoState} = useStore()
 
   const {
     modules,
@@ -68,11 +70,52 @@ function Body({ midiInput, midiOutput }: BodyProps) {
     // globals,
   } = useStore();
 
+  useEffectOnce(()=>{
+    console.log("here")
+    const myFunc = (data: MidiData)=>{
+      console.log(data)
+      setCurrentMidiMessage(data)
+      const results = createFuncChain(data as MidiData, modules);
+      setTChain(results);
+      const finalOutput = results[results.length - 1];
+      // setShowAction(true);
+      console.log(finalOutput)
+      console.log(midiOutput)
+
+    };
+
+    // piano.onNoteEnd = myFunc;
+    setPianoState({onNoteEnd: myFunc})
+    // console.log(piano.onNoteEnd)
+    // setOutputDevice(midiOutput)
+  })
+
+  useEffect(()=>{
+    const myFunc = (data: MidiData)=>{
+      console.log(data)
+      setCurrentMidiMessage(data)
+      const results = createFuncChain(data as MidiData, modules);
+      setTChain(results);
+      if (data.eventTime?.toISOString() !== currentMidiMessage?.eventTime?.toISOString()){
+        const finalOutput = results[results.length - 1];
+        // setShowAction(true);
+        setFinalOutput(finalOutput)
+        console.log('here')
+        console.log(modules)
+        midiOutput?.send(finalOutput.data);
+      }
+  
+    };
+
+    // piano.onNoteEnd = myFunc;
+    setPianoState({onMessage: myFunc})
+  }, [midiInput, finalOutput]);
+
   useEffect(() => {
     //@ts-ignore
     if (midiInput) {
       midiInput.onmidimessage = (msg: any) => {
-
+        console.log(JSON.stringify(msg.data))
         const newMidiMessage = {
           data: msg.data,
           deviceName: msg.srcElement.name,
@@ -81,8 +124,11 @@ function Body({ midiInput, midiOutput }: BodyProps) {
           eventTime: new Date(msg.timeStamp),
         } as MidiData;
         if (newMidiMessage.eventTime?.toISOString() !== currentMidiMessage?.eventTime?.toISOString()){
-          setCurrentMidiMessage(newMidiMessage as MidiData);
+          setCurrentMidiMessage(_.cloneDeep(newMidiMessage) as MidiData);
+          // setCurrentMidiMessage(newMidiMessage as MidiData);
+          console.log(JSON.stringify(newMidiMessage.data))
           const results = createFuncChain(newMidiMessage as MidiData, modules);
+          console.log(results)
           setTChain(results);
           const finalOutput = results[results.length - 1];
           setShowAction(true);
@@ -95,13 +141,11 @@ function Body({ midiInput, midiOutput }: BodyProps) {
                 midiOutput?.send(finalOutput.data);
                 setShowOutputIndicatorLocal(true);
                 setFinalOutput(finalOutput)
-                const hideOutputIndicatorTimer = setTimeout(() => {
-                  // console.log("running output desc");
+                setTimeout(() => {
                   if (showOutputIndicatorLocal) {
                     setShowOutputIndicatorLocal(false);
                   }
                 }, INDICATOR_LENGTH);
-                // return () => clearTimeout(hideOutputIndicatorTimer);
               }
             } catch (e) {
               console.error(e);
@@ -111,20 +155,14 @@ function Body({ midiInput, midiOutput }: BodyProps) {
             }
           }
         }
-        // updateAllGlobals()
-        // const z = ()=>{updateAllGlobals()}
-        // z()
       };
 
     }
   }, [midiInput, finalOutput]);
 
   useEffect(()=>{
-    console.log("here")
     updateAllGlobals()
-    // console.log(finalOutput);
   },[finalOutput]);
-  // }, [midiInput, modules, outputDevice, setStartMessage]);
 
   useEffect(() => {
     // console.log(tChain);

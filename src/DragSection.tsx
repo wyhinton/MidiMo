@@ -46,7 +46,7 @@ interface DragSectionProps {
 }
 
 const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
-  const { modules, toggleCompletedState, toggleExpanded, deleteModule } =
+  const { modules, toggleExpanded, deleteModule, selectModule } =
     useStore();
   const MENU_ID = "blahblah";
   const { show } = useContextMenu({
@@ -72,7 +72,7 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
     });
   }
 
-  const handleItemClick = ({ id, event, props }: ItemParams) => {
+  const handleItemClick = ({ id }: ItemParams) => {
     if (id === "delete") {
       if (selectedModule) {
         deleteModule(selectedModule?.id);
@@ -115,7 +115,7 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
 
       <Collapse.Group css={{ padding: "$xs", width: "100%"}}>
         <Droppable droppableId="droppable">
-          {(provided, snapshot): JSX.Element => (
+          {(provided): JSX.Element => (
             <div
               {...provided.droppableProps}
               ref={provided.innerRef}
@@ -167,12 +167,16 @@ const DragSection = ({ midiData }: DragSectionProps): JSX.Element => {
                                   ? "1px solid white"
                                   : "",
                             }}
+                            onClick={()=>{
+                              setSelectedModule(module)
+                            }}
+                            className="nextui-collapse-title nextui-collapse-view"
                             onContextMenu={(e) => handleContextMenu(e, module)}
                           >
                             <CustomCollapse
                               index={index}
                               module={module}
-                              onClick={(e) => {
+                              onClick={() => {
                                 toggleExpanded(module.id);
                               }}
                               dragHandleProps={provided.dragHandleProps}

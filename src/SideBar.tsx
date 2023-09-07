@@ -1,29 +1,22 @@
-import React, { useState, useEffect, useRef} from "react";
+import { useState} from "react";
 import {
     ProSidebar,
     Menu,
     MenuItem,
-    SubMenu,
     SidebarHeader,
     SidebarFooter,
     SidebarContent
   } from 'react-pro-sidebar';
 import {
-    FaUser,
     FaAngleDoubleLeft,
     FaAngleDoubleRight,
-    FaTachometerAlt,
-    FaGem,
-    FaList,
-    FaRegLaughWink,
-    FaHeart,
     FaSave,
-    FaCross,
     FaTrash,
     FaPlus,
   } from 'react-icons/fa';
 import { useLocalStorage } from "usehooks-ts";
 import AddNewProcessor from "./Menues/AddNewProcessor";
+import useStore from "./store";
   const downloadFile = (myData: any) => {
     const fileName = "my-file";
     const json = JSON.stringify(myData, null, 2);
@@ -49,6 +42,7 @@ const SideBar = (): JSX.Element =>{
     const handleToggleSidebar = (value: boolean) => {
         setToggled(value);
     };
+    const {toggleMidiMap} = useStore()
     const handleCollapsedChange = () => {
         setCollapsed(!collapsed);
       };
@@ -113,6 +107,13 @@ const SideBar = (): JSX.Element =>{
                   }}
           icon={<FaSave />}>
             Save 
+          </MenuItem>
+          <MenuItem 
+          onMouseDown={(e) => {
+            toggleMidiMap()
+          }}
+          icon={<FaSave />}>
+            Midi Map 
           </MenuItem>
           <MenuItem icon={<FaTrash />}>
             Clear 

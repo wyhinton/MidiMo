@@ -151,7 +151,7 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
   );
   const [funcStatus, setFuncStatus] = useState<string>("no function");
   const [funcToExec, setFuncToExec] = useState<ExecFunc | undefined>();
-  const [fontSize, setFontSize] = useState(14);
+  const [fontSize, setFontSize] = useState(18);
   const [fullScreen, setFullScreen] = useState(false);
 
   useKeyboardShortcut(
@@ -296,7 +296,7 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
   const editorRef = useRef<ReactAce>(null);
 
   return (
-    <Grid.Container gap={2} justify="center">
+    <div style={{height: 500}}>
       <code
         style={{
           borderBottom: "1px solid white",
@@ -402,7 +402,7 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
           </Card>
         </Container>
       </Portal>
-      <Card css={{ position: "relative" }}>
+      <Card className = 'h-100' css={{ position: "relative" }}>
         <Button
           bordered
           css={{ position: "absolute", zIndex: 100, top: 0, right: 10 }}
@@ -426,11 +426,11 @@ function CodeModule({ moduleData, midiData, index }: ModuleProps) {
               // console.log(annotations);
             }}
             value={inputFunc}
-            height={"200px"}
+            height={"100%"}
           />
         )}
       </Card>
-    </Grid.Container>
+    </div>
   );
 }
 
